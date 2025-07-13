@@ -33,6 +33,24 @@ We welcome contributions to NullScan! Here's how you can help make this project 
    cargo run -- --target 127.0.0.1 --top100
    ```
 
+### PowerShell Setup (Windows)
+
+For convenient use in PowerShell, set up an alias after building:
+
+```powershell
+# Build the project first
+cargo build --release
+
+# Create an alias for the current session
+Set-Alias nullscan "$PWD\target\release\nullscan.exe"
+
+# Or add to your PowerShell profile for permanent use:
+Add-Content $PROFILE "Set-Alias nullscan '$PWD\target\release\nullscan.exe'"
+
+# Test the alias
+nullscan --help
+```
+
 ## 🔧 Development Workflow
 
 ### Code Style

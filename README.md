@@ -30,6 +30,22 @@ cargo build --release
 ./target/release/nullscan --help
 ```
 
+### PowerShell Setup (Windows)
+
+For easier usage in PowerShell, set up an alias:
+
+```powershell
+# Set alias for current session
+Set-Alias nullscan ".\target\release\nullscan.exe"
+
+# Or add to your PowerShell profile for permanent use
+Add-Content $PROFILE "Set-Alias nullscan `"$PWD\target\release\nullscan.exe`""
+
+# Now you can use it directly
+nullscan --help
+nullscan --target 127.0.0.1 --top100
+```
+
 ### Basic Usage
 
 ```bash
