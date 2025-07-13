@@ -156,7 +156,10 @@ impl Scanner {
         self.scan_with_vuln_checker(None).await
     }
 
-    pub async fn scan_with_vuln_checker(&self, vuln_checker: Option<&crate::vuln::VulnChecker>) -> Result<Vec<ScanResult>> {
+    pub async fn scan_with_vuln_checker(
+        &self,
+        vuln_checker: Option<&crate::vuln::VulnChecker>,
+    ) -> Result<Vec<ScanResult>> {
         let total_ports = self.config.ports.len();
         info!(
             "🔍 Scanning {} ports on {}",
@@ -219,7 +222,7 @@ impl Scanner {
                         }
                     }
                     scan_results.push(scan_result);
-                },
+                }
                 Err(e) => warn!("Task error: {e}"),
             }
         }

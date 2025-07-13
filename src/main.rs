@@ -107,8 +107,7 @@ async fn main() -> Result<()> {
             }
             Err(e) => {
                 warn!(
-                    "Failed to load vulnerability database: {}. Continuing without vuln checking.",
-                    e
+                    "Failed to load vulnerability database: {e}. Continuing without vuln checking."
                 );
                 None
             }

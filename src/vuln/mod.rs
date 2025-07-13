@@ -1,5 +1,5 @@
 use anyhow::Result;
-use log::{debug, info, warn};
+use log::{debug, info};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -24,6 +24,7 @@ pub enum VulnSeverity {
 }
 
 impl VulnSeverity {
+    #[allow(dead_code)]
     pub fn to_color_code(&self) -> &'static str {
         match self {
             VulnSeverity::Critical => "🔴",
@@ -61,13 +62,14 @@ pub struct VulnDatabase {
 
 pub struct VulnChecker {
     database: VulnDatabase,
+    #[allow(dead_code)]
     pattern_cache: HashMap<String, Vec<Vulnerability>>,
 }
 
 impl VulnChecker {
     /// Load vulnerability database from JSON file
     pub fn load_from_file(path: &str) -> Result<Self> {
-        info!("Loading vulnerability database from: {}", path);
+        info!("Loading vulnerability database from: {path}");
 
         let content = fs::read_to_string(path)?;
         let database: VulnDatabase = serde_json::from_str(&content)?;
@@ -94,7 +96,7 @@ impl VulnChecker {
     pub fn check_banner(&self, banner: &str) -> Vec<Vulnerability> {
         let mut vulnerabilities = Vec::new();
 
-        debug!("Checking banner: {}", banner);
+        debug!("Checking banner: {banner}");
 
         // Normalize banner for matching
         let normalized_banner = banner.trim().to_lowercase();
@@ -133,19 +135,16 @@ impl VulnChecker {
     /// Check if banner matches a vulnerability pattern
     fn matches_pattern(&self, banner: &str, pattern: &str) -> bool {
         // Support different pattern types
-        if pattern.starts_with("regex:") {
+        if let Some(regex_pattern) = pattern.strip_prefix("regex:") {
             // Regex pattern matching
-            let regex_pattern = &pattern[6..];
             if let Ok(re) = regex::Regex::new(regex_pattern) {
                 return re.is_match(banner);
             }
-        } else if pattern.starts_with("contains:") {
+        } else if let Some(substring) = pattern.strip_prefix("contains:") {
             // Simple substring matching
-            let substring = &pattern[9..];
             return banner.contains(substring);
-        } else if pattern.starts_with("version:") {
+        } else if let Some(version_pattern) = pattern.strip_prefix("version:") {
             // Version-specific matching
-            let version_pattern = &pattern[8..];
             return self.matches_version(banner, version_pattern);
         } else {
             // Default: case-insensitive substring matching
@@ -205,6 +204,7 @@ impl VulnChecker {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct VulnDbStats {
     pub total_patterns: usize,
     pub total_vulnerabilities: usize,
@@ -214,6 +214,7 @@ pub struct VulnDbStats {
 }
 
 /// Create a sample vulnerability database
+#[allow(dead_code)]
 pub fn create_sample_database() -> VulnDatabase {
     VulnDatabase {
         version: "1.0.0".to_string(),
