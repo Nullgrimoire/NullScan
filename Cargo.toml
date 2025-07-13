@@ -1,0 +1,28 @@
+[package]
+name = "nullscan"
+version = "1.0.0"
+edition = "2021"
+authors = ["NullScan Team"]
+description = "A fast, cross-platform Rust tool for scanning TCP ports and grabbing service banners"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/nullscan/nullscan"
+keywords = ["network", "security", "port-scanner", "tcp", "reconnaissance"]
+categories = ["command-line-utilities", "network-programming"]
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+clap = { version = "4.0", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+log = "0.4"
+env_logger = "0.10"
+futures = "0.3"
+chrono = { version = "0.4", features = ["serde"] }
+indicatif = "0.17"
+console = "0.15"
+colored = "2.0"
+
+[dev-dependencies]
+tokio-test = "0.4"

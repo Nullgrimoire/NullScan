@@ -1,0 +1,153 @@
+# ==============================================================================
+# NullScan .gitignore
+#
+# Folder Tracking Policy:
+# • .github/ - FULLY TRACKED (workflows, templates, copilot-instructions.md)
+# • .vscode/ - PARTIALLY TRACKED (shared configs only, not user settings)
+# ==============================================================================
+
+# Rust/Cargo build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo.lock should be tracked for applications, ignored for libraries
+# Since NullScan is an application, we track Cargo.lock for reproducible builds
+# Cargo.lock
+
+# Cargo configuration and cache
+.cargo/
+
+# ==============================================================================
+# IDE and Editor files
+# ==============================================================================
+
+# VS Code - track shared configurations, ignore user settings
+# ✅ TRACKED: .vscode/tasks.json, .vscode/launch.json (shared team configs)
+# ❌ IGNORED: .vscode/settings.json (personal user settings)
+.vscode/settings.json
+.vscode/*.code-workspace
+.vscode/.ropeproject
+
+# Other IDEs
+.idea/
+*.swp
+*.swo
+*~
+
+# ==============================================================================
+# OS generated files
+# ==============================================================================
+
+# Windows
+ehthumbs.db
+Thumbs.db
+desktop.ini
+*.tmp
+*.temp
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# ==============================================================================
+# Application Output Files (NullScan specific)
+# ==============================================================================
+scan_results.*
+localhost_*
+output.*
+results.*
+test_results.*
+*.scan
+*.output
+
+# Common output formats that might be generated
+# (Only ignore if they're output files, not source)
+# *.json
+# *.csv
+# *.md
+
+# Network scanning specific outputs
+*.pcap
+*.pcapng
+nmap_*
+scan_*
+
+# ==============================================================================
+# Development and Testing
+# ==============================================================================
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Backup files
+*.bak
+*.backup
+
+# Log files
+*.log
+
+# Coverage reports
+lcov.info
+*.profraw
+coverage/
+tarpaulin-report.html
+cobertura.xml
+
+# Flamegraph outputs
+flamegraph.svg
+perf.data*
+
+# Benchmark outputs
+criterion/
+benchmarks/
+
+# Test artifacts
+*.test
+test_output/
+
+# Debugging files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Profiling
+*.prof
+
+# ==============================================================================
+# Documentation and Distribution
+# ==============================================================================
+
+# Documentation build
+book/
+docs/_build/
+
+# Distribution files
+*.tar.gz
+*.zip
+dist/
+
+# ==============================================================================
+# Language Server and Tools
+# ==============================================================================
+
+# RLS and rust-analyzer files
+.rls/
+rust-project.json
+
+# ==============================================================================
+# Temporary files
+# ==============================================================================
+tmp/
+temp/

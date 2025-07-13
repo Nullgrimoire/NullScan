@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug NullScan",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=nullscan",
+                    "--package=nullscan"
+                ],
+                "filter": {
+                    "name": "nullscan",
+                    "kind": "bin"
+                }
+            },
+            "args": ["--target", "127.0.0.1", "--ports", "22,80,443", "--verbose"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug NullScan - Top 100",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=nullscan",
+                    "--package=nullscan"
+                ],
+                "filter": {
+                    "name": "nullscan",
+                    "kind": "bin"
+                }
+            },
+            "args": ["--target", "127.0.0.1", "--top100", "--banners", "--verbose"],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

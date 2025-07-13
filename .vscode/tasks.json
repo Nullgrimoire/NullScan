@@ -1,0 +1,68 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build NullScan",
+            "type": "shell",
+            "command": "cargo",
+            "args": ["build", "--release"],
+            "group": "build",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Build Debug",
+            "type": "shell",
+            "command": "cargo",
+            "args": ["build"],
+            "group": "build",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "cargo",
+            "args": ["test"],
+            "group": "test",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Check Code",
+            "type": "shell",
+            "command": "cargo",
+            "args": ["check"],
+            "group": "build",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Format Code",
+            "type": "shell",
+            "command": "cargo",
+            "args": ["fmt"],
+            "group": "build"
+        },
+        {
+            "label": "Clippy Lint",
+            "type": "shell",
+            "command": "cargo",
+            "args": ["clippy", "--all-targets", "--all-features", "--", "-D", "warnings"],
+            "group": "build",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "Run NullScan - Top 100",
+            "type": "shell",
+            "command": "${workspaceFolder}\\target\\release\\nullscan.exe",
+            "args": ["--target", "127.0.0.1", "--top100", "--verbose"],
+            "group": "test",
+            "dependsOn": "Build NullScan"
+        },
+        {
+            "label": "Run NullScan - With Banners",
+            "type": "shell",
+            "command": "${workspaceFolder}\\target\\release\\nullscan.exe",
+            "args": ["--target", "example.com", "--ports", "80,443", "--banners", "--format", "json"],
+            "group": "test",
+            "dependsOn": "Build NullScan"
+        }
+    ]
+}
