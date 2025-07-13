@@ -1,22 +1,18 @@
 #!/usr/bin/env pwsh
 
 # NullScan Usage Examples
-# Demonstrate# Example 5: Parallel host scanning demo
-Write-Host "`n🎯 Example 5: Parallel vs Sequential Host Scanning" -ForegroundColor Magenta
-Write-Host "Testing sequential scanning (--max-hosts 1):"
-Write-Host "Command: nullscan --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 1"
-Measure-Command { & nullscan --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 1 } | ForEach-Object { Write-Host "Sequential time: $($_.TotalSeconds) seconds" -ForegroundColor Cyan }
-
-Write-Host "`nTesting parallel scanning (--max-hosts 2):"
-Write-Host "Command: nullscan --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 2"
-Measure-Command { & nullscan --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 2 } | ForEach-Object { Write-Host "Parallel time: $($_.TotalSeconds) seconds" -ForegroundColor Green }
-
-Write-Host "`n🎉 Examples completed!" -ForegroundColor Green
+# Demonstrate various feWrite-Host "`n🎉 Examples completed!" -ForegroundColor Green
 Write-Host "📚 For more options, run: nullscan --help" -ForegroundColor Cyan
-Write-Host "🌐 Network range scanning examples:" -ForegroundColor Cyan
-Write-Host "  - Small network: nullscan --target 192.168.1.0/28 --top100 --max-hosts 4" -ForegroundColor Gray
-Write-Host "  - Large network: nullscan --target 10.0.0.0/16 --top1000 --max-hosts 16 --format json" -ForegroundColor Gray
-Write-Host "  - Fast discovery: nullscan --target 172.16.0.0/24 --ports 22,80,443 --max-hosts 8" -ForegroundColor Gray to use NullScan including network range scanning
+Write-Host "🌐 Advanced usage examples:" -ForegroundColor Cyan
+Write-Host "  - Large network with ping sweep: nullscan --target 10.0.0.0/24 --ping-sweep --top100 --max-hosts 10" -ForegroundColor Gray
+Write-Host "  - Multiple targets: nullscan --target `"8.8.8.8,8.8.4.4,1.1.1.1`" --ping-sweep --ports 53,80,443" -ForegroundColor Gray
+Write-Host "  - Enterprise scan: nullscan --target 172.16.0.0/16 --ping-sweep --top1000 --max-hosts 20 --format json" -ForegroundColor Gray
+Write-Host "  - Parallel scanning: nullscan --target 192.168.1.0/24 --top100 --max-hosts 8" -ForegroundColor Gray
+
+# Cleanup demo files
+Write-Host "`n🧹 Cleaning up demo files..." -ForegroundColor Yellow
+Remove-Item -Path "localhost_range.csv" -ErrorAction SilentlyContinue
+Write-Host "✅ Cleanup completed!" -ForegroundColor Green including ping sweep and parallel scanning
 
 Write-Host "🔍 NullScan Usage Examples" -ForegroundColor Cyan
 Write-Host "=========================" -ForegroundColor Cyan
@@ -24,11 +20,6 @@ Write-Host "=========================" -ForegroundColor Cyan
 # Build the project first
 Write-Host "`n📦 Building NullScan..." -ForegroundColor Yellow
 cargo build --release
-
-# Set up alias for easier usage
-Write-Host "`n⚙️ Setting up PowerShell alias..." -ForegroundColor Yellow
-Set-Alias nullscan "$PWD\target\release\nullscan.exe"
-Write-Host "✅ Alias 'nullscan' configured for this session" -ForegroundColor Green
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Build failed!" -ForegroundColor Red
@@ -56,6 +47,14 @@ Write-Host "`n" + "="*80
 Write-Host "`n🎯 Example 2: Network range scan with CIDR notation" -ForegroundColor Magenta
 Write-Host "Command: nullscan --target 127.0.0.1/31 --ports 80,443 --verbose"
 & nullscan --target 127.0.0.1/31 --ports 80,443 --verbose
+
+Write-Host "`n" + "="*80
+
+# Example 2.5: Ping sweep demonstration
+Write-Host "`n🎯 Example 2.5: Ping sweep for efficient network scanning" -ForegroundColor Magenta
+Write-Host "Command: nullscan --target 192.168.1.0/30 --ping-sweep --ports 22,80,443 --verbose"
+Write-Host "(This will ping sweep first to find live hosts, then scan only reachable ones)"
+& nullscan --target 192.168.1.0/30 --ping-sweep --ports 22,80,443 --verbose
 
 Write-Host "`n" + "="*80
 

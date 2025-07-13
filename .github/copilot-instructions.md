@@ -6,10 +6,13 @@ This is a production-ready Rust application for fast TCP port scanning and servi
 
 ## Key Features
 
--   Fast, asynchronous TCP port scanning
+-   Fast, asynchronous TCP port scanning with parallel host support
+-   Ping sweep functionality for network discovery
 -   Service banner detection and grabbing
 -   Top 100/1000 port presets
--   Markdown export functionality
+-   Multiple export formats (Markdown, JSON, CSV) with IP-grouped output
+-   CIDR network range scanning
+-   Comma-separated target support
 -   Cross-platform compatibility
 -   CLI interface with comprehensive options
 
