@@ -21,7 +21,7 @@ use scanner::{ScanConfig, ScanResult, Scanner};
 )]
 #[command(version = "1.0.0")]
 struct Args {
-    /// Target IP address or hostname
+    /// Target IP address, hostname, or CIDR notation (e.g., 192.168.1.0/24)
     #[arg(short, long)]
     target: String,
 
@@ -79,18 +79,9 @@ async fn main() -> Result<()> {
 
     info!("🚀 NullScan v1.0.0 - Starting port scan");
 
-    // Parse target
-    let target: IpAddr = match args.target.parse() {
-        Ok(ip) => ip,
-        Err(_) => {
-            // Try to resolve hostname
-            let addrs = tokio::net::lookup_host(format!("{}:80", args.target)).await?;
-            addrs
-                .map(|addr| addr.ip())
-                .next()
-                .ok_or_else(|| anyhow::anyhow!("Failed to resolve hostname: {}", args.target))?
-        }
-    };
+    // Parse targets
+    let targets = parse_targets(&args.target).await?;
+    info!("Parsed {} target(s) from: {}", targets.len(), args.target);
 
     // Determine ports to scan
     let ports = if args.top100 {
@@ -106,32 +97,63 @@ async fn main() -> Result<()> {
     };
 
     info!(
-        "Target: {} | Ports: {} | Concurrency: {}",
-        target,
+        "Targets: {} | Ports: {} | Concurrency: {}",
+        targets.len(),
         ports.len(),
         args.concurrency
     );
 
-    // Create scan configuration
-    let config = ScanConfig {
-        target,
-        ports,
-        concurrency: args.concurrency,
-        timeout_ms: args.timeout,
-        grab_banners: args.banners,
-    };
-
-    // Perform scan
+    // Scan all targets
     let start_time = Instant::now();
-    let scanner = Scanner::new(config);
-    let results = scanner.scan().await?;
+    let mut all_results = Vec::new();
+
+    for (i, target) in targets.iter().enumerate() {
+        info!("📡 Scanning target {}/{}: {}", i + 1, targets.len(), target);
+
+        // Create scan configuration for this target
+        let config = ScanConfig {
+            target: *target,
+            ports: ports.clone(),
+            concurrency: args.concurrency,
+            timeout_ms: args.timeout,
+            grab_banners: args.banners,
+        };
+
+        // Perform scan
+        let scanner = Scanner::new(config);
+        let results = scanner.scan().await?;
+
+        // Store results with target info
+        all_results.push((target.to_string(), results));
+    }
+
     let scan_duration = start_time.elapsed();
 
-    // Generate report
-    let report = generate_scan_report(&results, &args.target, scan_duration);
+    // Generate and export results
+    if targets.len() == 1 {
+        // Single target - use existing format
+        let (target_str, results) = &all_results[0];
+        let report = generate_scan_report(results, target_str, scan_duration);
+        export::export_results(results, &report, args.format, args.output).await?;
+    } else {
+        // Multiple targets - combine results
+        let mut combined_results = Vec::new();
 
-    // Export results
-    export::export_results(&results, &report, args.format, args.output).await?;
+        for (target_str, results) in &all_results {
+            let open_count = results.iter().filter(|r| r.is_open).count();
+
+            info!(
+                "📊 {}: {}/{} ports open",
+                target_str,
+                open_count,
+                results.len()
+            );
+            combined_results.extend(results.iter().cloned());
+        }
+
+        let report = generate_network_scan_report(&all_results, &args.target, scan_duration);
+        export::export_results(&combined_results, &report, args.format, args.output).await?;
+    }
 
     info!("✅ Scan completed in {scan_duration:.2?}");
     Ok(())
@@ -163,6 +185,58 @@ fn parse_port_specification(spec: &str) -> Result<Vec<u16>> {
     Ok(ports)
 }
 
+/// Parse target specification and return list of IP addresses
+async fn parse_targets(target_spec: &str) -> Result<Vec<IpAddr>> {
+    let mut targets = Vec::new();
+
+    // Check if it's CIDR notation
+    if target_spec.contains('/') {
+        let network: ipnet::IpNet = target_spec
+            .parse()
+            .map_err(|_| anyhow::anyhow!("Invalid CIDR notation: {}", target_spec))?;
+
+        // Collect all IPs in the network (limit to reasonable size)
+        let mut count = 0;
+        for ip in network.hosts() {
+            if count >= 1024 {
+                warn!("Network too large, limiting to first 1024 hosts");
+                break;
+            }
+            targets.push(ip);
+            count += 1;
+        }
+
+        if targets.is_empty() {
+            return Err(anyhow::anyhow!(
+                "No hosts found in network: {}",
+                target_spec
+            ));
+        }
+    } else {
+        // Single IP or hostname
+        match target_spec.parse::<IpAddr>() {
+            Ok(ip) => targets.push(ip),
+            Err(_) => {
+                // Try to resolve hostname
+                let resolved = tokio::net::lookup_host(format!("{}:80", target_spec))
+                    .await
+                    .map_err(|_| anyhow::anyhow!("Failed to resolve hostname: {}", target_spec))?;
+
+                if let Some(addr) = resolved.map(|addr| addr.ip()).next() {
+                    targets.push(addr);
+                } else {
+                    return Err(anyhow::anyhow!(
+                        "No addresses found for hostname: {}",
+                        target_spec
+                    ));
+                }
+            }
+        }
+    }
+
+    Ok(targets)
+}
+
 fn generate_scan_report(
     results: &[ScanResult],
     target: &str,
@@ -178,6 +252,37 @@ fn generate_scan_report(
     report.insert("total_ports".to_string(), total_ports.to_string());
     report.insert("open_ports".to_string(), open_ports.to_string());
     report.insert("closed_ports".to_string(), closed_ports.to_string());
+    report.insert("scan_duration".to_string(), format!("{duration:.2?}"));
+    report.insert("timestamp".to_string(), chrono::Utc::now().to_rfc3339());
+
+    report
+}
+
+fn generate_network_scan_report(
+    all_results: &[(String, Vec<ScanResult>)],
+    target_spec: &str,
+    duration: std::time::Duration,
+) -> HashMap<String, String> {
+    let mut report = HashMap::new();
+
+    let total_targets = all_results.len();
+    let total_ports: usize = all_results.iter().map(|(_, results)| results.len()).sum();
+    let total_open_ports: usize = all_results
+        .iter()
+        .map(|(_, results)| results.iter().filter(|r| r.is_open).count())
+        .sum();
+
+    report.insert(
+        "target".to_string(),
+        format!("{} ({} hosts)", target_spec, total_targets),
+    );
+    report.insert("total_targets".to_string(), total_targets.to_string());
+    report.insert("total_ports".to_string(), total_ports.to_string());
+    report.insert("open_ports".to_string(), total_open_ports.to_string());
+    report.insert(
+        "closed_ports".to_string(),
+        (total_ports - total_open_ports).to_string(),
+    );
     report.insert("scan_duration".to_string(), format!("{duration:.2?}"));
     report.insert("timestamp".to_string(), chrono::Utc::now().to_rfc3339());
 

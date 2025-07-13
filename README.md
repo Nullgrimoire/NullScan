@@ -5,7 +5,8 @@
 ## ✨ Features
 
 - 🚀 **Fast Asynchronous Scanning** - Concurrent TCP port scanning with configurable thread limits
-- 🎯 **Smart Port Selection** - Top 100/1000 common ports or custom ranges
+- � **Network Range Support** - CIDR notation scanning (e.g., `192.168.1.0/24`, `10.0.0.0/16`)
+- �🎯 **Smart Port Selection** - Top 100/1000 common ports or custom ranges
 - 🏷️ **Service Detection** - Automatic service identification for common ports
 - 📡 **Banner Grabbing** - Capture service banners and version information
 - 📊 **Multiple Export Formats** - JSON, Markdown, and CSV output options
@@ -49,17 +50,20 @@ nullscan --target 127.0.0.1 --top100
 ### Basic Usage
 
 ```bash
-# Scan top 100 ports on a target
+# Scan top 100 ports on a single target
 nullscan --target 192.168.1.1 --top100
+
+# Scan a network range with CIDR notation
+nullscan --target 192.168.1.0/24 --top100
 
 # Scan specific ports with banner grabbing
 nullscan --target example.com --ports 22,80,443 --banners
 
-# Scan top 1000 ports and export to JSON
-nullscan --target 192.168.1.0/24 --top1000 --format json --output scan_results.json
+# Network scan with JSON output
+nullscan --target 10.0.0.0/24 --top1000 --format json --output network_scan.json
 
 # Custom port range with high concurrency
-nullscan --target 10.0.0.1 --ports 1-65535 --concurrency 500 --timeout 1000
+nullscan --target 172.16.0.0/16 --ports 1-1000 --concurrency 200 --timeout 1000
 ```
 
 ## 📋 Command Line Options
