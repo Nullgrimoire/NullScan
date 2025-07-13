@@ -16,7 +16,7 @@
 - 🎯 **Smart Port Selection** - Top 100/1000 common ports or custom ranges
 - 🏷️ **Advanced Service Detection** - Intelligent protocol probing with confidence scoring
 - 📡 **Enhanced Banner Grabbing** - Protocol-specific probes for SSH, TLS, HTTP, databases, and more
-- 📊 **Multiple Export Formats** - JSON, Markdown, and CSV output options with IP-grouped results
+- 📊 **Multiple Export Formats** - JSON, Markdown, CSV, and HTML output options with IP-grouped results
 - 🎨 **Rich CLI Interface** - Progress bars and colored output
 - ⚡ **High Performance** - Built with Tokio for maximum concurrency
 - 🔧 **Configurable** - Timeout, concurrency, and output customization
@@ -136,7 +136,7 @@ Options:
       --ping-sweep                 Perform ping sweep before port scanning (skip unreachable hosts)
       --timeout <TIMEOUT>          Connection timeout in milliseconds [default: 3000]
   -b, --banners                    Grab service banners
-  -f, --format <FORMAT>            Export format (json, markdown, csv) [default: markdown]
+  -f, --format <FORMAT>            Export format (json, markdown, csv, html) [default: markdown]
   -o, --output <OUTPUT>            Output file path
   -v, --verbose                    Verbose output
   -h, --help                       Print help
@@ -231,7 +231,31 @@ target,port,is_open,service,banner,response_time
 192.168.1.1,80,true,HTTP,Apache/2.4.41,23
 ```
 
+### HTML Output
+
+Interactive HTML reports perfect for penetration testing documentation:
+
+```bash
+# Generate professional HTML report
+nullscan --target 192.168.1.0/24 --top100 --format html --output pentest_report.html --banners
+
+# Single host with detailed banner information
+nullscan --target example.com --ports 80,443,22 --format html --output target_scan.html --banners
+```
+
+**Features:**
+
+- 🎨 **Professional Styling** - Clean, modern interface with responsive design
+- 📊 **Interactive Tables** - Click to sort by port, service, banner, or response time
+- 🗂️ **Collapsible Sections** - Expand/collapse individual hosts or entire report
+- 📋 **Copy-Paste Ready** - Export results to clipboard for easy inclusion in reports
+- 📱 **Mobile Friendly** - Responsive design works on all devices
+- 🎯 **IP Grouping** - Multi-host scans organized by target IP address
+
+The HTML format generates professional reports suitable for security assessments and penetration testing documentation.
+
 ## 🎯 Common Use Cases
+
 
 ### Network Discovery
 ```bash

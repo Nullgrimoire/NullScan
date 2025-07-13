@@ -1,9 +1,22 @@
 # ==============================================================================
-# NullScan .gitignore
+# NullScan .gitignore - Comprehensive Development Environment
+#
+# This file is structured to support all phases of development:
+# • Core Rust development artifacts
+# • Testing and debugging outputs
+# • CI/CD and release management
+# • Documentation and presentation materials
+# • Feature development and experimentation
 #
 # Folder Tracking Policy:
-# • .github/ - FULLY TRACKED (workflows, templates, copilot-instructions.md)
+# • .github/workflows/ - TRACKED (CI/CD workflows, public build processes)
+# • .github/copilot-instructions.md - IGNORED (internal GitHub Copilot context)
+# • .github/*.json - IGNORED (internal tool configurations)
 # • .vscode/ - PARTIALLY TRACKED (shared configs only, not user settings)
+# • examples/ - STRUCTURE TRACKED (scripts tracked, outputs ignored)
+# • src/ - FULLY TRACKED (all source code)
+# • target/ - IGNORED (build artifacts)
+# • README.md, CONTRIBUTING.md, SECURITY.md - TRACKED (project documentation)
 # ==============================================================================
 
 # Rust/Cargo build artifacts
@@ -156,14 +169,162 @@ temp/
 # NullScan output files (from testing/demos)
 # ==============================================================================
 
-# Scan result files
+# Scan result files - all formats
 *.csv
 *.json
+*.html
 *_scan.md
+*_scan.html
 *_results.*
+*_report.*
 scan_results.*
 network_scan.*
 localhost_range.*
+pentest_report.*
+multi_host_scan.*
+google_scan.*
 
 # Test output
 test.md
+test_report.*
+demo_output.*
+
+# Example outputs (keep examples/ directory structure but ignore generated files)
+examples/*.csv
+examples/*.json
+examples/*.html
+examples/*.md
+examples/output/
+
+# ==============================================================================
+# Development and Testing Artifacts
+# ==============================================================================
+
+# Performance benchmarks
+benchmarks/
+perf_*.txt
+*.bench
+
+# Code coverage reports
+coverage/
+*.profraw
+*.profdata
+
+# Temporary development files
+scratch/
+notes/
+dev_notes.*
+TODO.md
+DEVLOG.md
+DEVELOPMENT.md
+
+# ==============================================================================
+# GitHub Internal Files
+# ==============================================================================
+
+# GitHub Copilot context (internal development context)
+.github/copilot-instructions.md
+
+# Internal tool configurations (not needed by public users)
+.github/cspell.json
+.github/link-check-config.json
+.github/*.json
+
+# GitHub issue/PR templates (if created, these should be public)
+# .github/ISSUE_TEMPLATE/ - NOT IGNORED
+# .github/PULL_REQUEST_TEMPLATE/ - NOT IGNORED
+
+# Workflows remain public for CI/CD transparency
+# .github/workflows/ - NOT IGNORED (public CI/CD processes)
+
+# Debug and trace files
+debug_*.log
+trace_*.log
+*.trace
+
+# ==============================================================================
+# Feature Development Artifacts
+# ==============================================================================
+
+# Protocol testing files
+protocol_test.*
+banner_test.*
+service_test.*
+
+# Network simulation files
+network_sim.*
+mock_*.json
+
+# Performance testing
+load_test.*
+stress_test.*
+
+# Database files (if SQLite support is added)
+*.db
+*.sqlite
+*.sqlite3
+
+# Configuration templates and examples
+config_*.toml
+settings_*.json
+*.example
+
+# ==============================================================================
+# CI/CD and Release Artifacts
+# ==============================================================================
+
+# GitHub Actions cache
+.github/workflows/cache/
+
+# Release preparation
+release_notes_draft.md
+changelog_draft.md
+
+# Package and distribution
+pkg/
+packages/
+releases/
+
+# Security scanning reports
+security_report.*
+audit_report.*
+
+# ==============================================================================
+# Documentation Artifacts
+# ==============================================================================
+
+# Generated documentation
+docs/generated/
+api_docs/
+
+# Presentation materials
+slides/
+demos/output/
+
+# ==============================================================================
+# Platform-specific Development Files
+# ==============================================================================
+
+# Windows development
+*.exe.config
+*.manifest
+
+# Linux development
+*.so
+*.a
+
+# macOS development
+*.dylib
+
+# ==============================================================================
+# Logging and Monitoring
+# ==============================================================================
+
+# Application logs
+*.log
+logs/
+log_*.txt
+
+# Monitoring data
+metrics/
+telemetry/
