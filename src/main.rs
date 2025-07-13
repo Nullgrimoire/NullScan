@@ -55,7 +55,7 @@ struct Args {
     #[arg(long, default_value = "3000")]
     timeout: u64,
 
-    /// Grab service banners
+    /// Grab service banners with intelligent protocol probing
     #[arg(short = 'b', long)]
     banners: bool,
 

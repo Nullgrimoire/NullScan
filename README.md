@@ -9,13 +9,51 @@
 - ⚡ **Parallel Host Scanning** - Scan multiple hosts concurrently with `--max-hosts` for dramatic speed improvements
 - 🏓 **Ping Sweep** - Pre-scan host discovery to skip unreachable targets (huge time saver for large networks)
 - 🎯 **Smart Port Selection** - Top 100/1000 common ports or custom ranges
-- 🏷️ **Service Detection** - Automatic service identification for common ports
-- 📡 **Banner Grabbing** - Capture service banners and version information
+- 🏷️ **Advanced Service Detection** - Intelligent protocol probing with confidence scoring
+- 📡 **Enhanced Banner Grabbing** - Protocol-specific probes for SSH, TLS, HTTP, databases, and more
 - 📊 **Multiple Export Formats** - JSON, Markdown, and CSV output options with IP-grouped results
 - 🎨 **Rich CLI Interface** - Progress bars and colored output
 - ⚡ **High Performance** - Built with Tokio for maximum concurrency
 - 🔧 **Configurable** - Timeout, concurrency, and output customization
 - 🌐 **Cross-Platform** - Works on Windows, macOS, and Linux
+
+## 🔍 Service Detection & Protocol Probing
+
+NullScan uses intelligent protocol-specific probes to accurately identify services, even when they don't send immediate banners:
+
+### Supported Protocols
+
+| Protocol | Ports | Detection Method | Information Gathered |
+|----------|-------|------------------|---------------------|
+| **SSH** | 22, 2222 | SSH version handshake | SSH version, server software |
+| **HTTP** | 80, 8080, 3000, 8000 | HTTP GET request | Status codes, server headers, web technology |
+| **HTTPS/TLS** | 443, 8443, 993, 995 | TLS ClientHello | TLS version, certificate information |
+| **FTP** | 21 | Banner analysis | FTP server version, welcome message |
+| **SMTP** | 25, 587, 465 | SMTP welcome banner | Mail server software, capabilities |
+| **DNS** | 53 | DNS version query | DNS server responsiveness |
+| **Database** | 3306 (MySQL), 5432 (PostgreSQL), 1433 (MSSQL) | Protocol handshakes | Database version, server info |
+| **RDP** | 3389 | RDP connection request | Remote Desktop availability |
+| **SMB** | 139, 445 | NetBIOS session request | SMB/CIFS file sharing |
+
+### Enhanced Detection Features
+
+- **Silent Service Discovery**: Detects services that don't announce themselves
+- **Confidence Scoring**: Rates detection accuracy (0.0-1.0)
+- **Fallback Mechanisms**: Uses multiple detection methods per port
+- **Protocol Fingerprinting**: Identifies specific service versions and implementations
+
+### Example Output
+
+```bash
+# Advanced protocol detection
+nullscan --target 192.168.1.100 --ports 22,80,443,3306 --banners
+
+# Results show enhanced service information:
+# Port 22  | SSH     | SSH - SSH-2.0-OpenSSH_8.4p1 Ubuntu-6ubuntu2.1
+# Port 80  | HTTP    | HTTP - HTTP/1.1 200 OK Server: nginx/1.18.0
+# Port 443 | HTTPS   | TLS/SSL - TLS handshake successful (version: 3.3)
+# Port 3306| MySQL   | MySQL - MySQL 8.0.33-0ubuntu0.22.04.2
+```
 
 ## 🚀 Quick Start
 
