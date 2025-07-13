@@ -1,6 +1,7 @@
 use crate::presets::{get_top_ports, PortPreset};
 
 #[cfg(test)]
+#[allow(clippy::module_inception)]
 mod tests {
     use super::*;
 

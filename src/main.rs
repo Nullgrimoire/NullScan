@@ -221,14 +221,12 @@ async fn parse_targets(target_spec: &str) -> Result<Vec<IpAddr>> {
             .map_err(|_| anyhow::anyhow!("Invalid CIDR notation: {}", target_spec))?;
 
         // Collect all IPs in the network (limit to reasonable size)
-        let mut count = 0;
-        for ip in network.hosts() {
+        for (count, ip) in network.hosts().enumerate() {
             if count >= 1024 {
                 warn!("Network too large, limiting to first 1024 hosts");
                 break;
             }
             targets.push(ip);
-            count += 1;
         }
 
         if targets.is_empty() {
@@ -243,7 +241,7 @@ async fn parse_targets(target_spec: &str) -> Result<Vec<IpAddr>> {
             Ok(ip) => targets.push(ip),
             Err(_) => {
                 // Try to resolve hostname
-                let resolved = tokio::net::lookup_host(format!("{}:80", target_spec))
+                let resolved = tokio::net::lookup_host(format!("{target_spec}:80"))
                     .await
                     .map_err(|_| anyhow::anyhow!("Failed to resolve hostname: {}", target_spec))?;
 
@@ -299,7 +297,7 @@ fn generate_network_scan_report(
 
     report.insert(
         "target".to_string(),
-        format!("{} ({} hosts)", target_spec, total_targets),
+        format!("{target_spec} ({total_targets} hosts)"),
     );
     report.insert("total_targets".to_string(), total_targets.to_string());
     report.insert("total_ports".to_string(), total_ports.to_string());

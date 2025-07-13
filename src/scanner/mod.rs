@@ -21,6 +21,7 @@ pub struct ScanConfig {
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ScanResult {
+    pub target: IpAddr,
     pub port: u16,
     pub is_open: bool,
     pub service: Option<String>,
@@ -147,6 +148,7 @@ async fn scan_port(
             debug!("Port {} is open ({}ms)", port, response_time.as_millis());
 
             let mut result = ScanResult {
+                target,
                 port,
                 is_open: true,
                 service: get_service_name(port),
@@ -167,6 +169,7 @@ async fn scan_port(
             let response_time = start_time.elapsed();
             debug!("Port {port} is closed/filtered");
             ScanResult {
+                target,
                 port,
                 is_open: false,
                 service: None,

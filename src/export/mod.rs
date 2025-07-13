@@ -82,29 +82,74 @@ fn export_to_markdown(results: &[ScanResult], report: &HashMap<String, String>) 
         report.get("timestamp").unwrap_or(&"Unknown".to_string())
     ));
 
-    // Open ports
+    // Group open ports by host IP
     let open_ports: Vec<_> = results.iter().filter(|r| r.is_open).collect();
 
     if open_ports.is_empty() {
         output.push_str("## 🚫 No Open Ports Found\n\n");
         output.push_str("All scanned ports were closed or filtered.\n");
     } else {
+        // Group results by target IP
+        let mut hosts_with_open_ports: std::collections::HashMap<
+            std::net::IpAddr,
+            Vec<&ScanResult>,
+        > = std::collections::HashMap::new();
+
+        for result in &open_ports {
+            hosts_with_open_ports
+                .entry(result.target)
+                .or_default()
+                .push(result);
+        }
+
+        // Sort hosts by IP address for consistent output
+        let mut sorted_hosts: Vec<_> = hosts_with_open_ports.iter().collect();
+        sorted_hosts.sort_by_key(|(ip, _)| ip.to_string());
+
         output.push_str("## 🟢 Open Ports\n\n");
-        output.push_str("| Port | Service | Banner | Response Time |\n");
-        output.push_str("|------|---------|--------|--------------|\n");
 
-        for result in open_ports {
-            let service = result.service.as_deref().unwrap_or("Unknown");
-            let banner = result.banner.as_deref().unwrap_or("N/A");
-            let response_time = format!("{}ms", result.response_time.as_millis());
+        // Check if we have multiple hosts
+        if sorted_hosts.len() == 1 {
+            // Single host - use simple table format
+            let (_, host_results) = sorted_hosts[0];
+            output.push_str("| Port | Service | Banner | Response Time |\n");
+            output.push_str("|------|---------|--------|--------------|\n");
 
-            output.push_str(&format!(
-                "| {} | {} | {} | {} |\n",
-                result.port,
-                service,
-                banner.replace('|', "\\|"), // Escape pipes for markdown
-                response_time
-            ));
+            for result in host_results {
+                let service = result.service.as_deref().unwrap_or("Unknown");
+                let banner = result.banner.as_deref().unwrap_or("N/A");
+                let response_time = format!("{}ms", result.response_time.as_millis());
+
+                output.push_str(&format!(
+                    "| {} | {} | {} | {} |\n",
+                    result.port,
+                    service,
+                    banner.replace('|', "\\|"), // Escape pipes for markdown
+                    response_time
+                ));
+            }
+        } else {
+            // Multiple hosts - group by host IP
+            for (host_ip, host_results) in sorted_hosts {
+                output.push_str(&format!("### 🖥️ Host: {host_ip}\n\n"));
+                output.push_str("| Port | Service | Banner | Response Time |\n");
+                output.push_str("|------|---------|--------|--------------|\n");
+
+                for result in host_results {
+                    let service = result.service.as_deref().unwrap_or("Unknown");
+                    let banner = result.banner.as_deref().unwrap_or("N/A");
+                    let response_time = format!("{}ms", result.response_time.as_millis());
+
+                    output.push_str(&format!(
+                        "| {} | {} | {} | {} |\n",
+                        result.port,
+                        service,
+                        banner.replace('|', "\\|"), // Escape pipes for markdown
+                        response_time
+                    ));
+                }
+                output.push('\n');
+            }
         }
     }
 
