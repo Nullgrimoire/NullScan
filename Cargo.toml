@@ -24,6 +24,7 @@ indicatif = "0.17"
 console = "0.15"
 colored = "2.0"
 ipnet = "2.9"
+regex = "1.11.1"
 
 [dev-dependencies]
 tokio-test = "0.4"

@@ -11,6 +11,7 @@ mod banner;
 mod export;
 mod presets;
 mod scanner;
+mod vuln;
 
 use export::ExportFormat;
 use presets::PortPreset;
@@ -59,6 +60,10 @@ struct Args {
     #[arg(short = 'b', long)]
     banners: bool,
 
+    /// Check for known vulnerabilities based on service banners
+    #[arg(long)]
+    vuln_check: bool,
+
     /// Export format (json, markdown, csv)
     #[arg(short = 'f', long, default_value = "markdown")]
     format: ExportFormat,
@@ -88,6 +93,29 @@ async fn main() -> Result<()> {
     }
 
     info!("🚀 NullScan v1.0.0 - Starting port scan");
+
+    // Load vulnerability database if vuln checking is enabled
+    let vuln_checker = if args.vuln_check {
+        match vuln::VulnChecker::load_from_file("vuln_db.json") {
+            Ok(checker) => {
+                let stats = checker.get_stats();
+                info!(
+                    "🛡️  Vulnerability database loaded: {} patterns, {} vulnerabilities",
+                    stats.total_patterns, stats.total_vulnerabilities
+                );
+                Some(Arc::new(checker))
+            }
+            Err(e) => {
+                warn!(
+                    "Failed to load vulnerability database: {}. Continuing without vuln checking.",
+                    e
+                );
+                None
+            }
+        }
+    } else {
+        None
+    };
 
     // Parse targets
     let targets = parse_targets(&args.target).await?;
@@ -149,6 +177,7 @@ async fn main() -> Result<()> {
         let timeout = args.timeout;
         let grab_banners = args.banners;
         let total_targets = final_targets.len();
+        let vuln_checker = vuln_checker.clone();
 
         async move {
             // Acquire semaphore permit
@@ -167,7 +196,11 @@ async fn main() -> Result<()> {
 
             // Perform scan
             let scanner = Scanner::new(config);
-            let results = scanner.scan().await?;
+            let results = if let Some(ref checker) = vuln_checker {
+                scanner.scan_with_vuln_checker(Some(checker)).await?
+            } else {
+                scanner.scan().await?
+            };
 
             Ok::<(String, Vec<ScanResult>), anyhow::Error>((target.to_string(), results))
         }

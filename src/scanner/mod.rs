@@ -116,6 +116,7 @@ pub struct ScanResult {
     pub banner: Option<String>,
     #[serde(with = "duration_millis")]
     pub response_time: Duration,
+    pub vulnerabilities: Vec<crate::vuln::Vulnerability>,
 }
 
 mod duration_millis {
@@ -152,6 +153,10 @@ impl Scanner {
     }
 
     pub async fn scan(&self) -> Result<Vec<ScanResult>> {
+        self.scan_with_vuln_checker(None).await
+    }
+
+    pub async fn scan_with_vuln_checker(&self, vuln_checker: Option<&crate::vuln::VulnChecker>) -> Result<Vec<ScanResult>> {
         let total_ports = self.config.ports.len();
         info!(
             "🔍 Scanning {} ports on {}",
@@ -204,7 +209,17 @@ impl Scanner {
         let mut scan_results = Vec::new();
         for result in results {
             match result {
-                Ok(scan_result) => scan_results.push(scan_result),
+                Ok(mut scan_result) => {
+                    // Check for vulnerabilities if checker is provided and port is open
+                    if let Some(checker) = vuln_checker {
+                        if scan_result.is_open {
+                            if let Some(banner) = &scan_result.banner {
+                                scan_result.vulnerabilities = checker.check_banner(banner);
+                            }
+                        }
+                    }
+                    scan_results.push(scan_result);
+                },
                 Err(e) => warn!("Task error: {e}"),
             }
         }
@@ -242,6 +257,7 @@ async fn scan_port(
                 service: get_service_name(port),
                 banner: None,
                 response_time,
+                vulnerabilities: Vec::new(),
             };
 
             // Grab banner if requested
@@ -263,6 +279,7 @@ async fn scan_port(
                 service: None,
                 banner: None,
                 response_time,
+                vulnerabilities: Vec::new(),
             }
         }
     }

@@ -22,6 +22,7 @@
 # Rust/Cargo build artifacts
 /target/
 **/*.rs.bk
+**/*.rs.tmp
 *.pdb
 
 # Cargo.lock should be tracked for applications, ignored for libraries
@@ -189,6 +190,12 @@ test.md
 test_report.*
 demo_output.*
 
+# Vulnerability checking output files
+test_vuln_report.*
+vuln_scan.*
+vulnerability_report.*
+cve_report.*
+
 # Example outputs (keep examples/ directory structure but ignore generated files)
 examples/*.csv
 examples/*.json
@@ -263,6 +270,11 @@ stress_test.*
 *.db
 *.sqlite
 *.sqlite3
+
+# Vulnerability database backups and variants
+vuln_db_*.json
+vulnerability_db.*
+cve_db.*
 
 # Configuration templates and examples
 config_*.toml
