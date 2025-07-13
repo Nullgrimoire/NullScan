@@ -3,7 +3,9 @@ use clap::Parser;
 use log::{info, warn};
 use std::collections::HashMap;
 use std::net::IpAddr;
+use std::sync::Arc;
 use std::time::Instant;
+use tokio::sync::Semaphore;
 
 mod banner;
 mod export;
@@ -41,8 +43,12 @@ struct Args {
     #[arg(short = 'c', long, default_value = "100")]
     concurrency: usize,
 
+    /// Maximum concurrent hosts to scan (for CIDR ranges)
+    #[arg(long, default_value = "1")]
+    max_hosts: usize,
+
     /// Connection timeout in milliseconds
-    #[arg(short = 't', long, default_value = "3000")]
+    #[arg(long, default_value = "3000")]
     timeout: u64,
 
     /// Grab service banners
@@ -97,35 +103,54 @@ async fn main() -> Result<()> {
     };
 
     info!(
-        "Targets: {} | Ports: {} | Concurrency: {}",
+        "Targets: {} | Ports: {} | Concurrency: {} | Max Hosts: {}",
         targets.len(),
         ports.len(),
-        args.concurrency
+        args.concurrency,
+        args.max_hosts
     );
 
-    // Scan all targets
+    // Scan all targets with parallel host scanning
     let start_time = Instant::now();
-    let mut all_results = Vec::new();
 
-    for (i, target) in targets.iter().enumerate() {
-        info!("📡 Scanning target {}/{}: {}", i + 1, targets.len(), target);
+    // Create semaphore to limit concurrent host scans
+    let host_semaphore = Arc::new(Semaphore::new(args.max_hosts));
 
-        // Create scan configuration for this target
-        let config = ScanConfig {
-            target: *target,
-            ports: ports.clone(),
-            concurrency: args.concurrency,
-            timeout_ms: args.timeout,
-            grab_banners: args.banners,
-        };
+    // Create futures for all target scans
+    let scan_futures = targets.iter().enumerate().map(|(i, target)| {
+        let host_semaphore = Arc::clone(&host_semaphore);
+        let ports = ports.clone();
+        let target = *target;
+        let concurrency = args.concurrency;
+        let timeout = args.timeout;
+        let grab_banners = args.banners;
+        let total_targets = targets.len();
 
-        // Perform scan
-        let scanner = Scanner::new(config);
-        let results = scanner.scan().await?;
+        async move {
+            // Acquire semaphore permit
+            let _permit = host_semaphore.acquire().await.unwrap();
 
-        // Store results with target info
-        all_results.push((target.to_string(), results));
-    }
+            info!("📡 Scanning target {}/{}: {}", i + 1, total_targets, target);
+
+            // Create scan configuration for this target
+            let config = ScanConfig {
+                target,
+                ports,
+                concurrency,
+                timeout_ms: timeout,
+                grab_banners,
+            };
+
+            // Perform scan
+            let scanner = Scanner::new(config);
+            let results = scanner.scan().await?;
+
+            Ok::<(String, Vec<ScanResult>), anyhow::Error>((target.to_string(), results))
+        }
+    });
+
+    // Execute all scans concurrently and collect results
+    let all_results = futures::future::try_join_all(scan_futures).await?;
 
     let scan_duration = start_time.elapsed();
 

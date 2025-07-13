@@ -1,7 +1,22 @@
 #!/usr/bin/env pwsh
 
 # NullScan Usage Examples
-# Demonstrates various ways to use NullScan including network range scanning
+# Demonstrate# Example 5: Parallel host scanning demo
+Write-Host "`n🎯 Example 5: Parallel vs Sequential Host Scanning" -ForegroundColor Magenta
+Write-Host "Testing sequential scanning (--max-hosts 1):"
+Write-Host "Command: nullscan --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 1"
+Measure-Command { & nullscan --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 1 } | ForEach-Object { Write-Host "Sequential time: $($_.TotalSeconds) seconds" -ForegroundColor Cyan }
+
+Write-Host "`nTesting parallel scanning (--max-hosts 2):"
+Write-Host "Command: nullscan --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 2"
+Measure-Command { & nullscan --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 2 } | ForEach-Object { Write-Host "Parallel time: $($_.TotalSeconds) seconds" -ForegroundColor Green }
+
+Write-Host "`n🎉 Examples completed!" -ForegroundColor Green
+Write-Host "📚 For more options, run: nullscan --help" -ForegroundColor Cyan
+Write-Host "🌐 Network range scanning examples:" -ForegroundColor Cyan
+Write-Host "  - Small network: nullscan --target 192.168.1.0/28 --top100 --max-hosts 4" -ForegroundColor Gray
+Write-Host "  - Large network: nullscan --target 10.0.0.0/16 --top1000 --max-hosts 16 --format json" -ForegroundColor Gray
+Write-Host "  - Fast discovery: nullscan --target 172.16.0.0/24 --ports 22,80,443 --max-hosts 8" -ForegroundColor Gray to use NullScan including network range scanning
 
 Write-Host "🔍 NullScan Usage Examples" -ForegroundColor Cyan
 Write-Host "=========================" -ForegroundColor Cyan

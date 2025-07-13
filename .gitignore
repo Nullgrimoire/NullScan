@@ -151,3 +151,19 @@ rust-project.json
 # ==============================================================================
 tmp/
 temp/
+
+# ==============================================================================
+# NullScan output files (from testing/demos)
+# ==============================================================================
+
+# Scan result files
+*.csv
+*.json
+*_scan.md
+*_results.*
+scan_results.*
+network_scan.*
+localhost_range.*
+
+# Test output
+test.md
