@@ -10,6 +10,94 @@ use tokio::time::timeout;
 
 use crate::banner::BannerGrabber;
 
+/// Ping a host to check if it's reachable
+pub async fn ping_host(target: IpAddr, timeout_ms: u64) -> bool {
+    debug!("Pinging {target}");
+
+    // For IPv4, try TCP connect to common ports (80, 443, 22) as a ping substitute
+    // This is more reliable than ICMP ping which often gets blocked
+    let common_ports = [80, 443, 22, 21, 25, 53, 110, 143, 993, 995];
+
+    for port in common_ports {
+        let addr = SocketAddr::new(target, port);
+
+        match timeout(
+            Duration::from_millis(timeout_ms / 2),
+            TcpStream::connect(addr),
+        )
+        .await
+        {
+            Ok(Ok(_)) => {
+                debug!("Host {target} is reachable (TCP connect to port {port})");
+                return true;
+            }
+            Ok(Err(_)) => {
+                // Connection refused - host is up but port is closed
+                debug!("Host {target} is reachable (connection refused on port {port})");
+                return true;
+            }
+            Err(_) => {
+                // Timeout - try next port
+                continue;
+            }
+        }
+    }
+
+    debug!("Host {target} appears to be unreachable");
+    false
+}
+
+/// Perform ping sweep on multiple hosts
+pub async fn ping_sweep(targets: &[IpAddr], timeout_ms: u64, concurrency: usize) -> Vec<IpAddr> {
+    info!("🏓 Starting ping sweep for {} hosts", targets.len());
+
+    let progress = ProgressBar::new(targets.len() as u64);
+    progress.set_style(
+        ProgressStyle::default_bar()
+            .template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos}/{len} hosts ({eta})")
+            .unwrap()
+            .progress_chars("#>-"),
+    );
+
+    let semaphore = Arc::new(tokio::sync::Semaphore::new(concurrency));
+    let mut tasks = Vec::new();
+
+    for target in targets {
+        let target = *target;
+        let semaphore = semaphore.clone();
+        let progress = progress.clone();
+
+        let task = tokio::spawn(async move {
+            let _permit = semaphore.acquire().await.unwrap();
+            let is_alive = ping_host(target, timeout_ms).await;
+            progress.inc(1);
+
+            if is_alive {
+                Some(target)
+            } else {
+                None
+            }
+        });
+
+        tasks.push(task);
+    }
+
+    let results = join_all(tasks).await;
+    progress.finish_with_message("Ping sweep completed");
+
+    let alive_hosts: Vec<IpAddr> = results
+        .into_iter()
+        .filter_map(|r| r.ok().flatten())
+        .collect();
+
+    info!(
+        "✅ Ping sweep found {}/{} hosts alive",
+        alive_hosts.len(),
+        targets.len()
+    );
+    alive_hosts
+}
+
 #[derive(Debug, Clone)]
 pub struct ScanConfig {
     pub target: IpAddr,

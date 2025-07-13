@@ -47,6 +47,10 @@ struct Args {
     #[arg(long, default_value = "1")]
     max_hosts: usize,
 
+    /// Perform ping sweep before port scanning (skip unreachable hosts)
+    #[arg(long)]
+    ping_sweep: bool,
+
     /// Connection timeout in milliseconds
     #[arg(long, default_value = "3000")]
     timeout: u64,
@@ -110,6 +114,26 @@ async fn main() -> Result<()> {
         args.max_hosts
     );
 
+    // Perform ping sweep if requested
+    let final_targets = if args.ping_sweep {
+        info!("🏓 Ping sweep enabled, checking host availability...");
+        let alive_hosts = scanner::ping_sweep(&targets, args.timeout, args.concurrency).await;
+
+        if alive_hosts.is_empty() {
+            warn!("No hosts responded to ping sweep. Exiting.");
+            return Ok(());
+        }
+
+        info!(
+            "📊 Ping sweep reduced targets from {} to {} hosts",
+            targets.len(),
+            alive_hosts.len()
+        );
+        alive_hosts
+    } else {
+        targets
+    };
+
     // Scan all targets with parallel host scanning
     let start_time = Instant::now();
 
@@ -117,14 +141,14 @@ async fn main() -> Result<()> {
     let host_semaphore = Arc::new(Semaphore::new(args.max_hosts));
 
     // Create futures for all target scans
-    let scan_futures = targets.iter().enumerate().map(|(i, target)| {
+    let scan_futures = final_targets.iter().enumerate().map(|(i, target)| {
         let host_semaphore = Arc::clone(&host_semaphore);
         let ports = ports.clone();
         let target = *target;
         let concurrency = args.concurrency;
         let timeout = args.timeout;
         let grab_banners = args.banners;
-        let total_targets = targets.len();
+        let total_targets = final_targets.len();
 
         async move {
             // Acquire semaphore permit
@@ -155,7 +179,7 @@ async fn main() -> Result<()> {
     let scan_duration = start_time.elapsed();
 
     // Generate and export results
-    if targets.len() == 1 {
+    if final_targets.len() == 1 {
         // Single target - use existing format
         let (target_str, results) = &all_results[0];
         let report = generate_scan_report(results, target_str, scan_duration);
@@ -213,6 +237,52 @@ fn parse_port_specification(spec: &str) -> Result<Vec<u16>> {
 /// Parse target specification and return list of IP addresses
 async fn parse_targets(target_spec: &str) -> Result<Vec<IpAddr>> {
     let mut targets = Vec::new();
+
+    // Check if it's multiple targets separated by commas
+    if target_spec.contains(',') {
+        for target in target_spec.split(',') {
+            let target = target.trim();
+
+            // Handle each target type individually
+            if target.contains('/') {
+                // CIDR notation
+                let network: ipnet::IpNet = target
+                    .parse()
+                    .map_err(|_| anyhow::anyhow!("Invalid CIDR notation: {}", target))?;
+
+                for (count, ip) in network.hosts().enumerate() {
+                    if count >= 1024 {
+                        warn!("Network too large, limiting to first 1024 hosts");
+                        break;
+                    }
+                    targets.push(ip);
+                }
+            } else {
+                // Single IP or hostname
+                match target.parse::<IpAddr>() {
+                    Ok(ip) => targets.push(ip),
+                    Err(_) => {
+                        // Try to resolve hostname
+                        let resolved = tokio::net::lookup_host(format!("{target}:80"))
+                            .await
+                            .map_err(|_| {
+                                anyhow::anyhow!("Failed to resolve hostname: {}", target)
+                            })?;
+
+                        if let Some(addr) = resolved.map(|addr| addr.ip()).next() {
+                            targets.push(addr);
+                        } else {
+                            return Err(anyhow::anyhow!(
+                                "No IP addresses found for hostname: {}",
+                                target
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+        return Ok(targets);
+    }
 
     // Check if it's CIDR notation
     if target_spec.contains('/') {
