@@ -66,8 +66,8 @@ nullscan --target 192.168.1.100 --ports 22,80,443,3306 --banners
 
 ```bash
 # Clone the repository
-git clone https://github.com/nullscan/nullscan.git
-cd nullscan
+git clone https://github.com/Nullgrimoire/NullScan.git
+cd NullScan
 
 # Build the project
 cargo build --release
@@ -333,6 +333,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Built with ❤️ in Rust
 - Inspired by classic network scanning tools
 - Thanks to the Rust community for excellent async libraries
+
+## 💖 Support
+
+If you find NullScan helpful, consider supporting the project:
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support%20Development-orange?style=flat-square&logo=buy-me-a-coffee)](https://coff.ee/nullgrimoire)
+
+Your support helps maintain and improve NullScan for the community! 🚀
 
 ---
 

@@ -2,11 +2,11 @@
 name = "nullscan"
 version = "1.0.0"
 edition = "2021"
-authors = ["NullScan Team"]
+authors = ["Nullgrimoire <null.grimoire.mage@gmail.com>"]
 description = "A fast, cross-platform Rust tool for scanning TCP ports and grabbing service banners"
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/nullscan/nullscan"
+repository = "https://github.com/Nullgrimoire/NullScan"
 keywords = ["network", "security", "port-scanner", "tcp", "reconnaissance"]
 categories = ["command-line-utilities", "network-programming"]
 

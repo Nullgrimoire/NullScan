@@ -17,7 +17,7 @@ We take security seriously. If you discover a security vulnerability in NullScan
 
 **Please do NOT create a public GitHub issue for security vulnerabilities.**
 
-Instead, please email us at: **security@nullscan.dev**
+Instead, please email us at: **null.grimoire.mage@gmail.com**
 
 Include the following information:
 - Description of the vulnerability

@@ -14,8 +14,8 @@ We welcome contributions to NullScan! Here's how you can help make this project 
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/nullscan/nullscan.git
-   cd nullscan
+   git clone https://github.com/Nullgrimoire/NullScan.git
+   cd NullScan
    ```
 
 2. **Build the project**:
