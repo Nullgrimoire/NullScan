@@ -55,7 +55,7 @@ fi
 
 echo -e "\n$(printf '=%.0s' {1..80})"
 
-# Example 2: Network range scan (CIDR)  
+# Example 2: Network range scan (CIDR)
 echo -e "\n${MAGENTA}🎯 Example 2: Network range scan with CIDR notation${NC}"
 echo -e "Command: nullscan --target 127.0.0.1/31 --ports 80,443 --verbose"
 if [ "${CI_MODE:-0}" = "1" ]; then

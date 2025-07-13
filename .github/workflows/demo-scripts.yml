@@ -76,24 +76,28 @@ jobs:
               if: matrix.shell == 'bash'
               run: |
                   echo "Testing Bash demo script..."
-                  timeout 300 bash ${{ matrix.script }} || true
+                  export CI_MODE=1
+                  timeout 60 bash ${{ matrix.script }} || true
 
             - name: 🧪 Test Fish script
               if: matrix.shell == 'fish'
               run: |
                   echo "Testing Fish demo script..."
-                  timeout 300 fish ${{ matrix.script }} || true
+                  export CI_MODE=1
+                  timeout 60 fish ${{ matrix.script }} || true
 
             - name: 🧪 Test Python script
               if: matrix.shell == 'python'
               run: |
                   echo "Testing Python demo script..."
-                  python ${{ matrix.script }} || true
+                  export CI_MODE=1
+                  timeout 60 python ${{ matrix.script }} || true
 
             - name: 🧪 Test PowerShell script
               if: matrix.shell == 'powershell'
               run: |
                   echo "Testing PowerShell demo script..."
+                  $env:CI_MODE = "1"
                   $env:ErrorActionPreference = "Continue"
                   & ${{ matrix.script }}
 
@@ -102,6 +106,7 @@ jobs:
               shell: cmd
               run: |
                   echo Testing Batch demo script...
+                  set CI_MODE=1
                   ${{ matrix.script }}
 
     validate-demo-docs:
