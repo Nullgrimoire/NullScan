@@ -1,0 +1,138 @@
+name: Documentation
+
+on:
+    push:
+        paths:
+            - '**.md'
+            - '.github/workflows/docs.yml'
+    pull_request:
+        paths:
+            - '**.md'
+    workflow_dispatch:
+
+jobs:
+    lint-markdown:
+        name: Lint Markdown
+        runs-on: ubuntu-latest
+        steps:
+            - name: 📂 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 🔍 Lint Markdown files
+              uses: DavidAnson/markdownlint-cli2-action@v13
+              with:
+                  globs: |
+                      **/*.md
+                      !target/**
+                      !node_modules/**
+
+    validate-links:
+        name: Validate Links
+        runs-on: ubuntu-latest
+        steps:
+            - name: 📂 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 🔗 Check links in README
+              uses: gaurav-nelson/github-action-markdown-link-check@v1
+              with:
+                  use-quiet-mode: 'yes'
+                  use-verbose-mode: 'yes'
+                  config-file: '.github/link-check-config.json'
+                  folder-path: '.'
+                  file-extension: '.md'
+
+    generate-docs:
+        name: Generate Documentation
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        steps:
+            - name: 📂 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 🦀 Setup Rust
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: 📦 Cache dependencies
+              uses: Swatinem/rust-cache@v2
+
+            - name: 📚 Generate Rust docs
+              run: cargo doc --no-deps --document-private-items
+
+            - name: 🏗️ Build release for help output
+              run: cargo build --release
+
+            - name: 📋 Generate CLI help documentation
+              run: |
+                  echo "# 📖 NullScan CLI Reference" > CLI_REFERENCE.md
+                  echo "" >> CLI_REFERENCE.md
+                  echo "## Command Line Options" >> CLI_REFERENCE.md
+                  echo "" >> CLI_REFERENCE.md
+                  echo "\`\`\`" >> CLI_REFERENCE.md
+                  ./target/release/nullscan --help >> CLI_REFERENCE.md
+                  echo "\`\`\`" >> CLI_REFERENCE.md
+                  echo "" >> CLI_REFERENCE.md
+                  echo "## Version Information" >> CLI_REFERENCE.md
+                  echo "" >> CLI_REFERENCE.md
+                  echo "\`\`\`" >> CLI_REFERENCE.md
+                  ./target/release/nullscan --version >> CLI_REFERENCE.md
+                  echo "\`\`\`" >> CLI_REFERENCE.md
+                  echo "" >> CLI_REFERENCE.md
+                  echo "*This documentation is auto-generated from the latest build.*" >> CLI_REFERENCE.md
+
+            - name: 📊 Generate feature matrix
+              run: |
+                  echo "# 🎯 Feature Compatibility Matrix" > FEATURES.md
+                  echo "" >> FEATURES.md
+                  echo "## Core Features" >> FEATURES.md
+                  echo "" >> FEATURES.md
+                  echo "| Feature | Linux | Windows | macOS | Description |" >> FEATURES.md
+                  echo "|---------|-------|---------|-------|-------------|" >> FEATURES.md
+                  echo "| TCP Port Scanning | ✅ | ✅ | ✅ | Fast async TCP port scanning |" >> FEATURES.md
+                  echo "| Ping Sweep | ✅ | ✅ | ✅ | TCP-based host discovery |" >> FEATURES.md
+                  echo "| Protocol Probing | ✅ | ✅ | ✅ | Advanced service detection |" >> FEATURES.md
+                  echo "| Banner Grabbing | ✅ | ✅ | ✅ | Service version identification |" >> FEATURES.md
+                  echo "| CIDR Support | ✅ | ✅ | ✅ | Network range scanning |" >> FEATURES.md
+                  echo "| Multiple Formats | ✅ | ✅ | ✅ | JSON, CSV, Markdown output |" >> FEATURES.md
+                  echo "| Parallel Scanning | ✅ | ✅ | ✅ | Concurrent host processing |" >> FEATURES.md
+                  echo "" >> FEATURES.md
+                  echo "## Supported Protocols" >> FEATURES.md
+                  echo "" >> FEATURES.md
+                  echo "| Protocol | Ports | Detection Method | Information Gathered |" >> FEATURES.md
+                  echo "|----------|-------|------------------|---------------------|" >> FEATURES.md
+                  echo "| SSH | 22, 2222 | SSH handshake | Version, server software |" >> FEATURES.md
+                  echo "| HTTP | 80, 8080, 3000, 8000 | HTTP requests | Status, server headers |" >> FEATURES.md
+                  echo "| HTTPS/TLS | 443, 8443, 993, 995 | TLS ClientHello | TLS version, certificates |" >> FEATURES.md
+                  echo "| FTP | 21 | Banner analysis | Server version, welcome |" >> FEATURES.md
+                  echo "| SMTP | 25, 587, 465 | SMTP banner | Mail server software |" >> FEATURES.md
+                  echo "| DNS | 53 | Version query | Server responsiveness |" >> FEATURES.md
+                  echo "| Databases | 3306, 5432, 1433 | Protocol handshakes | Database versions |" >> FEATURES.md
+                  echo "| RDP | 3389 | Connection request | Remote Desktop availability |" >> FEATURES.md
+                  echo "| SMB | 139, 445 | NetBIOS session | File sharing services |" >> FEATURES.md
+
+            - name: 📤 Upload generated docs
+              uses: actions/upload-artifact@v3
+              with:
+                  name: generated-documentation
+                  path: |
+                      CLI_REFERENCE.md
+                      FEATURES.md
+                      target/doc/
+
+    spell-check:
+        name: Spell Check
+        runs-on: ubuntu-latest
+        steps:
+            - name: 📂 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 🔤 Spell check documentation
+              uses: streetsidesoftware/cspell-action@v5
+              with:
+                  files: |
+                      **/*.md
+                      !target/**
+                      !node_modules/**
+                  config: '.github/cspell.json'
+                  strict: false
+                  incremental_files_only: false

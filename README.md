@@ -1,5 +1,10 @@
 # 🔍 NullScan
 
+[![CI/CD Pipeline](https://github.com/Nullgrimoire/NullScan/actions/workflows/ci.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/ci.yml)
+[![Security Audit](https://github.com/Nullgrimoire/NullScan/actions/workflows/maintenance.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/maintenance.yml)
+[![Documentation](https://github.com/Nullgrimoire/NullScan/actions/workflows/docs.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/docs.yml)
+[![Demo Scripts](https://github.com/Nullgrimoire/NullScan/actions/workflows/demo-scripts.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/demo-scripts.yml)
+
 **NullScan** is a fast, cross-platform Rust tool for scanning TCP ports and grabbing service banners. It supports full scans, top 100/1000 presets, and exports results to Markdown — built for speed, clarity, and recon precision.
 
 ## ✨ Features

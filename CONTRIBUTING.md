@@ -203,13 +203,21 @@ src/
    cargo fmt --check
    ```
 
-6. **Write a clear PR description** including:
+6. **Check automated workflows** - Our GitHub Actions will automatically:
+   - ✅ Test on Linux, Windows, and macOS
+   - ✅ Run security audits and dependency checks
+   - ✅ Validate code formatting and linting
+   - ✅ Test demo scripts across all platforms
+   - ✅ Run performance benchmarks (for PRs)
+   - ✅ Check documentation and links
+
+7. **Write a clear PR description** including:
    - What changes you made
    - Why you made them
    - How to test the changes
    - Any breaking changes
 
-7. **Request review** from maintainers
+8. **Request review** from maintainers
 
 ### PR Review Criteria
 
