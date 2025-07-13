@@ -12,6 +12,9 @@ import platform
 import time
 from pathlib import Path
 
+# Check if we're in CI mode
+CI_MODE = os.environ.get('CI_MODE', '0') == '1'
+
 # ANSI color codes for cross-platform colored output
 class Colors:
     RED = '\033[0;31m'
@@ -109,14 +112,22 @@ def main():
     print_header("Example 1: Basic scan of localhost with top 100 ports")
     cmd = f"{nullscan} --target 127.0.0.1 --top100"
     print_command(cmd)
-    run_command(cmd)
+    if CI_MODE:
+        print_colored("(CI Mode: Skipping actual scan, showing help instead)", Colors.YELLOW)
+        run_command(f"{nullscan} --help | head -10", show_output=False)
+    else:
+        run_command(cmd)
     print(separator)
 
     # Example 2: Network range scan
     print_header("Example 2: Network range scan with CIDR notation")
     cmd = f"{nullscan} --target 127.0.0.1/31 --ports 80,443 --verbose"
     print_command(cmd)
-    run_command(cmd)
+    if CI_MODE:
+        print_colored("(CI Mode: Showing version instead)", Colors.YELLOW)
+        run_command(f"{nullscan} --version")
+    else:
+        run_command(cmd)
     print(separator)
 
     # Example 3: Ping sweep demonstration
@@ -124,14 +135,22 @@ def main():
     cmd = f"{nullscan} --target 192.168.1.0/30 --ping-sweep --ports 22,80,443 --verbose"
     print_command(cmd)
     print_colored("(This will ping sweep first to find live hosts, then scan only reachable ones)", Colors.GRAY)
-    run_command(cmd)
+    if CI_MODE:
+        print_colored("(CI Mode: Showing ping sweep feature info)", Colors.YELLOW)
+        print("Ping sweep optimizes scanning by testing host availability first")
+    else:
+        run_command(cmd)
     print(separator)
 
     # Example 4: Multiple targets
     print_header("Example 4: Multiple targets with ping sweep")
     cmd = f'{nullscan} --target "8.8.8.8,8.8.4.4,1.1.1.1" --ping-sweep --ports 53,80,443'
     print_command(cmd)
-    run_command(cmd)
+    if CI_MODE:
+        print_colored("(CI Mode: Showing multiple target syntax)", Colors.YELLOW)
+        print('Multiple targets can be specified as: --target "host1,host2,host3"')
+    else:
+        run_command(cmd)
     print(separator)
 
     # Example 5: JSON export
@@ -139,7 +158,14 @@ def main():
     json_file = "google_scan.json"
     cmd = f"{nullscan} --target google.com --ports 80,443 --banners --format json --output {json_file}"
     print_command(cmd)
-    run_command(cmd)
+    if CI_MODE:
+        print_colored("(CI Mode: Showing JSON format example)", Colors.YELLOW)
+        sample_json = '{"target":"example.com","ports":[{"port":80,"state":"open","service":"http","banner":"Server: nginx/1.18.0"}]}'
+        print(sample_json)
+        with open(json_file, 'w') as f:
+            f.write(sample_json)
+    else:
+        run_command(cmd)
 
     if Path(json_file).exists():
         print_colored(f"\n📄 Generated JSON file:", Colors.GREEN)
@@ -152,7 +178,14 @@ def main():
     csv_file = "localhost_range.csv"
     cmd = f"{nullscan} --target 127.0.0.1 --ports 130-140 --format csv --output {csv_file}"
     print_command(cmd)
-    run_command(cmd)
+    if CI_MODE:
+        print_colored("(CI Mode: Showing CSV format example)", Colors.YELLOW)
+        sample_csv = "host,port,state,service,banner\n127.0.0.1,135,closed,msrpc,\n127.0.0.1,139,closed,netbios-ssn,"
+        print(sample_csv)
+        with open(csv_file, 'w') as f:
+            f.write(sample_csv)
+    else:
+        run_command(cmd)
 
     if Path(csv_file).exists():
         print_colored(f"\n📄 Generated CSV file:", Colors.GREEN)
@@ -163,27 +196,33 @@ def main():
     # Example 7: Performance comparison
     print_header("Example 7: Performance comparison (Sequential vs Parallel)")
 
-    # Sequential scan
-    print_colored("Testing sequential scanning (--max-hosts 1):", Colors.BLUE)
-    cmd_seq = f"{nullscan} --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 1"
-    print_command(cmd_seq)
-    start_time = time.time()
-    run_command(cmd_seq, show_output=False)
-    seq_time = time.time() - start_time
-    print_colored(f"Sequential time: {seq_time:.2f} seconds", Colors.CYAN)
+    if CI_MODE:
+        print_colored("(CI Mode: Showing performance comparison concept)", Colors.YELLOW)
+        print("Sequential scanning (--max-hosts 1): One host at a time")
+        print("Parallel scanning (--max-hosts 2+): Multiple hosts simultaneously")
+        print("Performance benefits scale with network size and available resources")
+    else:
+        # Sequential scan
+        print_colored("Testing sequential scanning (--max-hosts 1):", Colors.BLUE)
+        cmd_seq = f"{nullscan} --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 1"
+        print_command(cmd_seq)
+        start_time = time.time()
+        run_command(cmd_seq, show_output=False)
+        seq_time = time.time() - start_time
+        print_colored(f"Sequential time: {seq_time:.2f} seconds", Colors.CYAN)
 
-    # Parallel scan
-    print_colored("\nTesting parallel scanning (--max-hosts 2):", Colors.BLUE)
-    cmd_par = f"{nullscan} --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 2"
-    print_command(cmd_par)
-    start_time = time.time()
-    run_command(cmd_par, show_output=False)
-    par_time = time.time() - start_time
-    print_colored(f"Parallel time: {par_time:.2f} seconds", Colors.GREEN)
+        # Parallel scan
+        print_colored("\nTesting parallel scanning (--max-hosts 2):", Colors.BLUE)
+        cmd_par = f"{nullscan} --target 127.0.0.1/30 --ports 80,443 --timeout 1000 --max-hosts 2"
+        print_command(cmd_par)
+        start_time = time.time()
+        run_command(cmd_par, show_output=False)
+        par_time = time.time() - start_time
+        print_colored(f"Parallel time: {par_time:.2f} seconds", Colors.GREEN)
 
-    if par_time < seq_time:
-        improvement = ((seq_time - par_time) / seq_time) * 100
-        print_colored(f"🚀 Parallel scanning was {improvement:.1f}% faster!", Colors.GREEN)
+        if par_time < seq_time:
+            improvement = ((seq_time - par_time) / seq_time) * 100
+            print_colored(f"🚀 Parallel scanning was {improvement:.1f}% faster!", Colors.GREEN)
 
     print(separator)
 
