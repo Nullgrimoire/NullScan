@@ -1,26 +1,34 @@
 # 🔍 NullScan
 
 [![Tests](https://github.com/Nullgrimoire/NullScan/actions/workflows/test.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/test.yml)
+[![Release](https://github.com/Nullgrimoire/NullScan/actions/workflows/release.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub release](https://img.shields.io/github/v/release/Nullgrimoire/NullScan)](https://github.com/Nullgrimoire/NullScan/releases/latest)
 
-**NullScan** is a fast, cross-platform Rust tool for scanning TCP ports and grabbing service banners. It supports full scans, top 100/1000 presets, and exports results to Markdown — built for speed, clarity, and recon precision.
+**NullScan** is a fast, cross-platform Rust tool for scanning TCP ports and grabbing service banners. It supports full scans, top 100/1000 presets, and exports results to multiple formats — built for speed, clarity, and reconnaissance precision.
+
+## 📖 Table of Contents
+
+- [✨ Features](#-features)
+- [📚 Documentation](#-documentation)
+- [🛡️ Vulnerability Assessment](#️-vulnerability-assessment)
+- [🔍 Service Detection & Protocol Probing](#-service-detection--protocol-probing)
+- [🚀 Installation](#-installation)
+- [🚀 Quick Start](#-quick-start)
+- [📋 Command Line Options](#-command-line-options)
+- [🏓 Ping Sweep Feature](#-ping-sweep-feature)
+- [⚡ Fast Mode Feature](#-fast-mode-feature)
+- [📊 Output Formats](#-output-formats)
+- [🎯 Common Use Cases](#-common-use-cases)
+- [🔧 Performance Optimization](#-performance-optimization)
+- [⚡ Performance Benchmarks](#-performance-benchmarks)
+- [🏗️ Architecture](#️-architecture)
+- [🤝 Contributing](#-contributing)
+- [📝 License](#-license)
 
 ## ✨ Features
 
-## 📚 Documentation
-
-For comprehensive technical documentation and development guides, visit the **[docs/](docs/)** directory:
-
-### 🚀 Performance & Optimization
-- **[Performance Benchmarks](docs/benchmarks.md)** - Detailed performance comparisons with industry tools
-- **[Fast Mode Deep Dive](docs/fast-mode-deep-dive.md)** - Complete guide to LUDICROUS SPEED optimizations and CPU auto-detection
-- **[Ping Sweep Optimization](docs/ping-sweep-optimization.md)** - Technical deep-dive into network scanning algorithms
-
-### 🔍 Feature Deep Dives
-- **[Banner Grabbing & Service Detection](docs/banner-grabbing-deep-dive.md)** - Protocol-specific service detection and confidence scoring
-
-### �‍💻 Development
-- **[Development Guide](docs/development.md)** - Setup, building, testing, and contributing to NullScan*Fast Asynchronous Scanning** - Concurrent TCP port scanning with configurable thread limits
+- 🚀 **Fast Asynchronous Scanning** - Concurrent TCP port scanning with configurable thread limits
 - 🌐 **Network Range Support** - CIDR notation scanning (e.g., `192.168.1.0/24`, `10.0.0.0/16`)
 - ⚡ **Parallel Host Scanning** - Scan multiple hosts concurrently with `--max-hosts` for dramatic speed improvements
 - 🏓 **Ping Sweep** - Pre-scan host discovery to skip unreachable targets (huge time saver for large networks)
@@ -34,7 +42,22 @@ For comprehensive technical documentation and development guides, visit the **[d
 - 🔧 **Configurable** - Timeout, concurrency, and output customization
 - 🌐 **Cross-Platform** - Works on Windows, macOS, and Linux
 
-## �️ Vulnerability Assessment
+## 📚 Documentation
+
+For comprehensive technical documentation and development guides, visit the **[docs/](docs/)** directory:
+
+### 🚀 Performance & Optimization
+- **[Performance Benchmarks](docs/benchmarks.md)** - Detailed performance comparisons with industry tools
+- **[Fast Mode Deep Dive](docs/fast-mode-deep-dive.md)** - Complete guide to LUDICROUS SPEED optimizations and CPU auto-detection
+- **[Ping Sweep Optimization](docs/ping-sweep-optimization.md)** - Technical deep-dive into network scanning algorithms
+
+### 🔍 Feature Deep Dives
+- **[Banner Grabbing & Service Detection](docs/banner-grabbing-deep-dive.md)** - Protocol-specific service detection and confidence scoring
+
+### 💻 Development
+- **[Development Guide](docs/development.md)** - Setup, building, testing, and contributing to NullScan
+
+## 🛡️ Vulnerability Assessment
 
 NullScan includes an offline vulnerability database for real-time security assessment:
 
@@ -68,7 +91,7 @@ nullscan --target example.com --ports 80,443,8080 --banners --vuln-check
 # Port 443 | HTTPS   | OpenSSL/1.0.2k      | 🔴 CVE-2016-2107: OpenSSL Padding Oracle Attack
 ```
 
-## �🔍 Service Detection & Protocol Probing
+## 🔍 Service Detection & Protocol Probing
 
 NullScan uses intelligent protocol-specific probes to accurately identify services, even when they don't send immediate banners:
 
@@ -188,8 +211,6 @@ cargo install --git https://github.com/Nullgrimoire/NullScan.git
 
 ## 🚀 Quick Start
 
-### Basic Usage
-
 ### PowerShell Setup (Windows)
 
 For easier usage in PowerShell, set up an alias:
@@ -246,7 +267,7 @@ nullscan --target 192.168.1.0/24 --fast-mode --top100
 
 ## 📋 Command Line Options
 
-```
+```text
 Usage: nullscan [OPTIONS] --target <TARGET>
 
 Options:
@@ -602,14 +623,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Inspired by classic network scanning tools
 - Thanks to the Rust community for excellent async libraries
 
-## � Documentation
-
-For comprehensive technical documentation and development guides, visit the **[docs/](docs/)** directory:
-
-- **[Performance Benchmarks](docs/benchmarks.md)** - Detailed performance comparisons with industry tools
-- **[Ping Sweep Optimization](docs/ping-sweep-optimization.md)** - Technical deep-dive into network scanning algorithms
-
-## �💖 Support
+## 💖 Support
 
 If you find NullScan helpful, consider supporting the project:
 
