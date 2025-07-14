@@ -45,14 +45,6 @@ jobs:
                       target: x86_64-pc-windows-msvc
                       binary_name: nullscan.exe
                       asset_name: nullscan-windows-x86_64.exe
-                    - os: macos-latest
-                      target: x86_64-apple-darwin
-                      binary_name: nullscan
-                      asset_name: nullscan-macos-x86_64
-                    - os: macos-latest
-                      target: aarch64-apple-darwin
-                      binary_name: nullscan
-                      asset_name: nullscan-macos-aarch64
 
         steps:
             - name: Checkout code
