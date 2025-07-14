@@ -108,6 +108,60 @@ nullscan --target 192.168.1.100 --ports 22,80,443,3306 --banners
 
 ## 🚀 Installation
 
+### Pre-Compiled Binaries (Recommended)
+
+**Download ready-to-use binaries from our GitHub releases:**
+
+[![Download Latest Release](https://img.shields.io/github/v/release/Nullgrimoire/NullScan?label=Download&style=for-the-badge)](https://github.com/Nullgrimoire/NullScan/releases/latest)
+
+Choose the binary for your platform:
+
+| Platform | Binary | SHA256 Checksum |
+|----------|--------|------------------|
+| **Linux (glibc)** | `nullscan-linux-x86_64` | `nullscan-linux-x86_64.sha256` |
+| **Linux (musl/static)** | `nullscan-linux-x86_64-musl` | `nullscan-linux-x86_64-musl.sha256` |
+| **Windows** | `nullscan-windows-x86_64.exe` | `nullscan-windows-x86_64.exe.sha256` |
+
+#### Quick Install (Linux/macOS)
+
+```bash
+# Download and install (replace VERSION with latest release)
+VERSION="v1.5.0"  # Check releases page for latest version
+wget https://github.com/Nullgrimoire/NullScan/releases/download/${VERSION}/nullscan-linux-x86_64
+chmod +x nullscan-linux-x86_64
+sudo mv nullscan-linux-x86_64 /usr/local/bin/nullscan
+
+# Verify installation
+nullscan --version
+```
+
+#### Quick Install (Windows PowerShell)
+
+```powershell
+# Download binary (replace VERSION with latest release)
+$VERSION = "v1.5.0"  # Check releases page for latest version
+Invoke-WebRequest -Uri "https://github.com/Nullgrimoire/NullScan/releases/download/$VERSION/nullscan-windows-x86_64.exe" -OutFile "nullscan.exe"
+
+# Run directly
+.\nullscan.exe --version
+```
+
+#### Verify Download Integrity
+
+Always verify your downloads using the provided SHA256 checksums:
+
+```bash
+# Linux/macOS
+wget https://github.com/Nullgrimoire/NullScan/releases/download/v1.5.0/nullscan-linux-x86_64.sha256
+shasum -a 256 -c nullscan-linux-x86_64.sha256
+```
+
+```powershell
+# Windows
+certutil -hashfile nullscan-windows-x86_64.exe SHA256
+# Compare output with contents of nullscan-windows-x86_64.exe.sha256
+```
+
 ### Build from Source
 
 **Prerequisites:**
