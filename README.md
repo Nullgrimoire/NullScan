@@ -251,16 +251,16 @@ nullscan --target 192.168.1.0/24 --ping-sweep --top100
 ## 🟢 Open Ports
 
 ### 🖥️ Host: 192.168.1.1
-| Port | Service | Banner | Response Time |
-|------|---------|--------|---------------|
-| 22   | SSH     | OpenSSH 8.0 | 45ms |
-| 80   | HTTP    | Apache/2.4.41 | 23ms |
+| Port | Service | Banner | Response Time | Vulnerabilities |
+|------|---------|--------|---------------|----------------|
+| 22   | SSH     | OpenSSH 8.0 | 45ms | None |
+| 80   | HTTP    | Apache/2.4.41 | 23ms | 🔴 CVE-2019-0211 (High) |
 
 ### 🖥️ Host: 192.168.1.2
-| Port | Service | Banner | Response Time |
-|------|---------|--------|---------------|
-| 443  | HTTPS   | N/A | 18ms |
-| 3306 | MySQL   | MySQL 8.0.32 | 12ms |
+| Port | Service | Banner | Response Time | Vulnerabilities |
+|------|---------|--------|---------------|----------------|
+| 443  | HTTPS   | N/A | 18ms | None |
+| 3306 | MySQL   | MySQL 8.0.32 | 12ms | None |
 ```
 
 ### JSON Output
@@ -271,15 +271,16 @@ nullscan --target 192.168.1.0/24 --ping-sweep --top100
   "is_open": true,
   "service": "SSH",
   "banner": "SSH-2.0-OpenSSH_8.0",
-  "response_time": 45
+  "response_time": 45,
+  "vulnerabilities": []
 }
 ```
 
 ### CSV Output
 ```csv
-target,port,is_open,service,banner,response_time
-192.168.1.1,22,true,SSH,SSH-2.0-OpenSSH_8.0,45
-192.168.1.1,80,true,HTTP,Apache/2.4.41,23
+Port,Status,Service,Banner,ResponseTime(ms),Vulnerabilities
+22,Open,"SSH","SSH-2.0-OpenSSH_8.0",45,"None"
+80,Open,"HTTP","Apache/2.4.41",23,"CVE-2019-0211 (High)"
 ```
 
 ### HTML Output
@@ -298,6 +299,10 @@ nullscan --target example.com --ports 80,443,22 --format html --output target_sc
 
 - 🎨 **Professional Styling** - Clean, modern interface with responsive design
 - 📊 **Interactive Tables** - Click to sort by port, service, banner, or response time
+- 📂 **IP-Grouped Results** - Organized by host for multi-target scans
+- 📋 **Copy to Clipboard** - Export results for external analysis
+- ⏰ **User-Friendly Timestamps** - Local time formatting (e.g., "July 13, 2025 at 09:43:18 PM (UTC -07:00)")
+- 🔍 **Vulnerability Integration** - CVE information displayed with color-coded severity levels
 - 🗂️ **Collapsible Sections** - Expand/collapse individual hosts or entire report
 - 📋 **Copy-Paste Ready** - Export results to clipboard for easy inclusion in reports
 - 📱 **Mobile Friendly** - Responsive design works on all devices
