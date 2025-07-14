@@ -1,37 +1,37 @@
 name: Tests
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    push:
+        branches: [main, master]
+    pull_request:
+        branches: [main, master]
 
 env:
-  CARGO_TERM_COLOR: always
+    CARGO_TERM_COLOR: always
 
 jobs:
-  test:
-    name: Test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    test:
+        name: Test
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-    - name: Setup Rust
-      uses: dtolnay/rust-toolchain@stable
+            - name: Setup Rust
+              uses: dtolnay/rust-toolchain@stable
 
-    - name: Cache dependencies
-      uses: Swatinem/rust-cache@v2
+            - name: Cache dependencies
+              uses: Swatinem/rust-cache@v2
 
-    - name: Run tests
-      run: cargo test
+            - name: Run tests
+              run: cargo test
 
-    - name: Check code compiles
-      run: cargo check
+            - name: Check code compiles
+              run: cargo check
 
-    - name: Build release
-      run: cargo build --release
+            - name: Build release
+              run: cargo build --release
