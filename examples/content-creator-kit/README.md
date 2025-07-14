@@ -115,7 +115,7 @@ httpbin.org     # HTTP testing service
 - **88ms** average for 100 ports (fast mode)
 - **115x faster** network scanning with ping sweep
 - **95ms timeout** for ultra-aggressive scanning
-- **12+ CVE patterns** in vulnerability database
+- **44+ CVE patterns** in vulnerability database
 - **4 export formats** for different use cases
 
 ### Technical Highlights

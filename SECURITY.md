@@ -6,6 +6,7 @@ We actively support the following versions of NullScan with security updates:
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 1.5.x   | :white_check_mark: |
 | 1.0.x   | :white_check_mark: |
 | < 1.0   | :x:                |
 

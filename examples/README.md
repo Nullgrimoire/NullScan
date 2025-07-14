@@ -133,8 +133,8 @@ Choose the demo script that matches your platform and shell:
 
 ```bash
 # Clone and build
-git clone https://github.com/nullscan/nullscan.git
-cd nullscan
+git clone https://github.com/Nullgrimoire/NullScan.git
+cd NullScan
 cargo build --release
 
 # Run appropriate demo
