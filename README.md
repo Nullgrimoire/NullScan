@@ -7,7 +7,20 @@
 
 ## ✨ Features
 
-- 🚀 **Fast Asynchronous Scanning** - Concurrent TCP port scanning with configurable thread limits
+## 📚 Documentation
+
+For comprehensive technical documentation and development guides, visit the **[docs/](docs/)** directory:
+
+### 🚀 Performance & Optimization
+- **[Performance Benchmarks](docs/benchmarks.md)** - Detailed performance comparisons with industry tools
+- **[Fast Mode Deep Dive](docs/fast-mode-deep-dive.md)** - Complete guide to LUDICROUS SPEED optimizations and CPU auto-detection
+- **[Ping Sweep Optimization](docs/ping-sweep-optimization.md)** - Technical deep-dive into network scanning algorithms
+
+### 🔍 Feature Deep Dives
+- **[Banner Grabbing & Service Detection](docs/banner-grabbing-deep-dive.md)** - Protocol-specific service detection and confidence scoring
+
+### �‍💻 Development
+- **[Development Guide](docs/development.md)** - Setup, building, testing, and contributing to NullScan*Fast Asynchronous Scanning** - Concurrent TCP port scanning with configurable thread limits
 - 🌐 **Network Range Support** - CIDR notation scanning (e.g., `192.168.1.0/24`, `10.0.0.0/16`)
 - ⚡ **Parallel Host Scanning** - Scan multiple hosts concurrently with `--max-hosts` for dramatic speed improvements
 - 🏓 **Ping Sweep** - Pre-scan host discovery to skip unreachable targets (huge time saver for large networks)
@@ -174,7 +187,7 @@ nullscan --target 10.0.0.0/22 --ping-sweep --top100 --quiet --format json --outp
 
 # ⚡ LUDICROUS SPEED mode - auto-optimized for maximum performance
 nullscan --target 192.168.1.0/24 --fast-mode --top100
-# Auto-sets: concurrency=1800 (12-core), timeout=50ms, quiet mode, IP-only, batched scanning
+# Auto-sets: concurrency=1800 (12-core), timeout=95ms, quiet mode, IP-only, batched scanning
 ```
 
 ## 📋 Command Line Options
@@ -234,7 +247,7 @@ The `--fast-mode` flag activates **LUDICROUS SPEED** mode with extreme optimizat
 
 - **CPU Detection**: Automatically detects logical cores on your system
 - **Ultra Concurrency**: Sets concurrency to `cores × 150` (e.g., 12 cores = 1800 concurrent connections)
-- **Ultra-Aggressive Timing**: Uses 50ms timeout (faster than Nmap -T5)
+- **Ultra-Aggressive Timing**: Uses 95ms timeout (optimized for reliability)
 - **Batched Scanning**: Processes ports in 200-port chunks for optimal efficiency
 - **DNS Skip**: Only accepts IP addresses (no hostname resolution overhead)
 - **Zero Overhead**: Strips all logging, progress bars, and non-essential operations
@@ -249,7 +262,7 @@ nullscan --target 192.168.1.0/24 --top100 --concurrency 100 --timeout 3000
 
 # Fast mode (12-core system) - LUDICROUS SPEED
 nullscan --target 192.168.1.0/24 --fast-mode --top100
-# Takes: ~2-3 seconds (automatically uses concurrency=1800, timeout=50ms)
+# Takes: ~2-3 seconds (automatically uses concurrency=1800, timeout=95ms)
 
 # Verified benchmark results (localhost testing):
 # • Top 100 ports: 88ms average

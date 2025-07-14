@@ -4,12 +4,13 @@ Welcome to the NullScan documentation directory. This contains comprehensive tec
 
 ## 📖 Documentation Index
 
-### 🚀 Performance & Benchmarks
+### 🚀 Performance & Optimization
 - **[Performance Benchmarks](benchmarks.md)** - Comprehensive performance testing results comparing NullScan with industry-standard tools like Nmap
+- **[Fast Mode Deep Dive](fast-mode-deep-dive.md)** - Complete guide to LUDICROUS SPEED optimizations, CPU auto-detection, and batched scanning architecture
 - **[Ping Sweep Optimization](ping-sweep-optimization.md)** - Technical deep-dive into ping sweep algorithms and network scanning optimizations
 
-### 👨‍💻 Development
-- **[Development Guide](development.md)** - Setup, building, testing, and contributing to NullScan development
+### 🔍 Feature Deep Dives
+- **[Banner Grabbing & Service Detection](banner-grabbing-deep-dive.md)** - Comprehensive guide to protocol-specific service detection, confidence scoring, and custom protocol support
 
 ## 🔗 Quick Links
 
@@ -32,14 +33,6 @@ All documentation in this directory follows these standards:
 - **Code examples** with syntax highlighting
 - **Performance metrics** with verified benchmark data
 - **Cross-references** with relative links to related documentation
-
-## 🔄 Keeping Documentation Updated
-
-When making changes to NullScan:
-1. Update relevant documentation files
-2. Verify all links and references work correctly
-3. Update performance benchmarks if applicable
-4. Follow the project's documentation style guide
 
 ---
 

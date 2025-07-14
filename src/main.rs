@@ -102,8 +102,8 @@ async fn main() -> Result<()> {
         // Maximize concurrency based on cores (cores * 150 for better saturation)
         args.concurrency = logical_cores * 150;
 
-        // Ultra-aggressive timeout (50ms - faster than Nmap T5)
-        args.timeout = 50;
+        // Ultra-aggressive timeout (95ms - optimized for reliability)
+        args.timeout = 95;
 
         // Disable ALL slow features
         args.banners = false;
