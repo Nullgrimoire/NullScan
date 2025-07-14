@@ -147,7 +147,68 @@ nmap --top-ports 100 192.168.1.0/24 -T4
 
 ---
 
-## 💾 Memory Usage Snapshot
+## 🧪 Running Your Own Benchmarks
+
+### Professional Benchmark Suite
+
+NullScan includes comprehensive benchmark scripts for professional performance testing:
+
+#### PowerShell (Windows)
+
+```powershell
+# Basic benchmark with all tests
+.\scripts\benchmark.ps1
+
+# Generate professional HTML report
+.\scripts\benchmark.ps1 -GenerateReport
+
+# Custom testing scenarios
+.\scripts\benchmark.ps1 -Target "192.168.1.100" -Iterations 10 -GenerateReport
+.\scripts\benchmark.ps1 -OnlyNullScan -SkipNetworkTest
+.\scripts\benchmark.ps1 -NetworkTarget "10.0.0.0/24" -NetworkIterations 5
+
+# Export results for analysis
+.\scripts\benchmark.ps1 -OutputFile "performance_results.csv" -GenerateReport
+```
+
+#### Bash (Linux/macOS)
+
+```bash
+# Basic benchmark with all tests
+./scripts/benchmark.sh
+
+# Custom parameters: target, network, iterations, network_iterations, skip_nmap, skip_network, only_nullscan, output, report
+./scripts/benchmark.sh 127.0.0.1 192.168.1.0/24 10 3 false false false results.csv true
+
+# Only test NullScan performance
+./scripts/benchmark.sh "" "" "" "" "" "" true
+
+# Skip network tests for faster execution
+./scripts/benchmark.sh "" "" "" "" false true
+
+# Generate HTML report
+./scripts/benchmark.sh "" "" "" "" false false false "" true
+```
+
+### Benchmark Features
+
+- **🏆 Multiple Test Scenarios**: Top 100 ports, specific ports, fast mode, banner grabbing, network ranges
+- **📊 Statistical Analysis**: Average, minimum, maximum, standard deviation calculations
+- **🆚 Tool Comparison**: Automatic comparison with Nmap when available
+- **📈 Professional Reports**: Interactive HTML reports with system information
+- **💾 Data Export**: CSV export for further analysis and tracking
+- **🎨 Rich Output**: Color-coded results with real-time progress tracking
+- **⚙️ System Detection**: Automatic CPU, RAM, and OS information gathering
+
+### Test Scenarios Included
+
+1. **Single Host - Top 100 Ports**: Standard performance baseline
+2. **Single Host - Common Ports**: Focused scanning (22, 80, 443, 3389)
+3. **Fast Mode**: NullScan's optimized LUDICROUS SPEED mode
+4. **Banner Grabbing**: Service detection performance comparison
+5. **Network Range**: Large-scale scanning with ping sweep optimization
+
+### Manual Performance Testing
 
 | Scanner     | Single Host | /24 Network | 1000 Ports |
 |-------------|-------------|-------------|------------|

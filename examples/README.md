@@ -2,18 +2,27 @@
 
 This directory contains professional demo scripts and content creator resources showcasing NullScan's capabilities across different platforms and use cases.
 
+## 🧪 Professional Benchmark Suite
+
+For comprehensive performance testing and validation, use the professional benchmark scripts:
+
+- **`../scripts/benchmark.ps1`** - Professional PowerShell benchmark suite with HTML reports
+- **`../scripts/benchmark.sh`** - Professional Bash benchmark suite with statistical analysis
+
+**Features**: Multi-scenario testing, statistical analysis, HTML reports, CSV export, system information detection
+
 ## 🎬 Content Creator Kit
 
 ### **📁 `content-creator-kit/`**
 Professional resources for YouTube videos, technical blogs, and demonstrations:
 
-- **`benchmark-comparison.ps1`** - Automated performance benchmarks (Windows)
-- **`benchmark-comparison.sh`** - Automated performance benchmarks (Linux/macOS)
+- **`benchmark-comparison.ps1`** - Content creator focused benchmarks (Windows)
+- **`benchmark-comparison.sh`** - Content creator focused benchmarks (Linux/macOS)
 - **`demo-targets.txt`** - Safe targets for demonstrations
 - **`sample-outputs/`** - Example reports for B-roll footage
 - **`README.md`** - Complete content creator guide
 
-**Perfect for**: Technical content creators, cybersecurity channels, performance comparisons
+**Perfect for**: Technical content creators, cybersecurity channels, performance comparisons, video demonstrations
 
 ## 🌐 Cross-Platform Demo Scripts
 

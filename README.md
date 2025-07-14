@@ -559,15 +559,37 @@ nullscan --target 10.0.0.0/22 --ping-sweep --top100 --ping-timeout 300
 
 ### Benchmark Your Environment
 
-Want to test NullScan's performance in your environment? Use our included benchmark scripts:
+Want to test NullScan's performance in your environment? Use our comprehensive benchmark scripts:
+
+```powershell
+# Windows PowerShell - Professional Benchmark Suite
+.\scripts\benchmark.ps1                                    # Basic benchmark with all tests
+.\scripts\benchmark.ps1 -GenerateReport                    # Generate HTML report
+.\scripts\benchmark.ps1 -OnlyNullScan -Iterations 10       # Only test NullScan performance
+.\scripts\benchmark.ps1 -SkipNetworkTest                   # Skip network range tests
+.\scripts\benchmark.ps1 -OutputFile results.csv            # Export to CSV
+```
 
 ```bash
-# Windows PowerShell
-.\scripts\benchmark.ps1 -Target "127.0.0.1" -Iterations 3
+# Linux/Unix - Professional Benchmark Suite
+./scripts/benchmark.sh                                     # Basic benchmark with all tests
+./scripts/benchmark.sh 127.0.0.1 192.168.1.0/24 10 3     # Custom parameters
+./scripts/benchmark.sh "" "" "" "" "" "" true             # Only NullScan tests
+./scripts/benchmark.sh "" "" "" "" false false false results.csv true  # Full test with report
+```
 
-# Linux/Unix
-./scripts/benchmark.sh 127.0.0.1 192.168.1.0/24 3
+#### Benchmark Features
 
+- **🏆 Comprehensive Testing**: Multiple test scenarios (Top 100 ports, specific ports, fast mode, banners, network ranges)
+- **📊 Statistical Analysis**: Average, minimum, maximum, and standard deviation calculations
+- **🆚 Tool Comparison**: Automatic comparison with Nmap (when available)
+- **📈 Professional Reports**: HTML reports with interactive tables and system information
+- **💾 Data Export**: CSV export for further analysis
+- **🎨 Rich Output**: Color-coded results with progress tracking
+
+#### Manual Performance Tests
+
+```bash
 # Quick local benchmark
 time nullscan --target 127.0.0.1 --ports 1-1000
 
