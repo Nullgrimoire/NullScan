@@ -1,6 +1,19 @@
-# 📋 NullScan Examples
+# 📋 NullScan Examples & Content Creator Kit
 
-This directory contains example scripts demonstrating NullScan's features across different platforms and shells.
+This directory contains professional demo scripts and content creator resources showcasing NullScan's capabilities across different platforms and use cases.
+
+## 🎬 Content Creator Kit
+
+### **📁 `content-creator-kit/`**
+Professional resources for YouTube videos, technical blogs, and demonstrations:
+
+- **`benchmark-comparison.ps1`** - Automated performance benchmarks (Windows)
+- **`benchmark-comparison.sh`** - Automated performance benchmarks (Linux/macOS)
+- **`demo-targets.txt`** - Safe targets for demonstrations
+- **`sample-outputs/`** - Example reports for B-roll footage
+- **`README.md`** - Complete content creator guide
+
+**Perfect for**: Technical content creators, cybersecurity channels, performance comparisons
 
 ## 🌐 Cross-Platform Demo Scripts
 
@@ -9,7 +22,8 @@ This directory contains example scripts demonstrating NullScan's features across
 #### PowerShell (`demo.ps1`)
 
 - **Best for**: Windows PowerShell 5.1+ and PowerShell Core 7+
-- **Features**: Full-featured with colored output, error handling, and performance testing
+- **Features**: Professional demo suite with 6 comprehensive demonstrations
+- **Showcases**: LUDICROUS SPEED mode, vulnerability assessment, HTML reports
 - **Usage**:
 
   ```powershell
