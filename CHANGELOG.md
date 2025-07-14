@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Professional Content Creator Kit** - Complete toolkit for technical YouTubers and bloggers
   - Automated benchmark comparison scripts for Windows and Linux/macOS
-  - Professional sample outputs for B-roll footage  
+  - Professional sample outputs for B-roll footage
   - Safe demo targets list for public demonstrations
   - Comprehensive content creator guide with performance statistics
 - **Enhanced Demo Scripts** - Completely rewritten professional demonstration suite
