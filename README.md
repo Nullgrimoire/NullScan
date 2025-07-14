@@ -214,6 +214,8 @@ nullscan --target 192.168.1.0/24 --ping-sweep --top100
 # Result: ~95% reduction in scan time!
 ```
 
+> 📖 **For advanced ping sweep optimization techniques, performance tuning parameters, and technical implementation details, see [PING_SWEEP_OPTIMIZATION.md](PING_SWEEP_OPTIMIZATION.md)**
+
 ## 📊 Output Formats
 
 ### Markdown (Default)

@@ -129,7 +129,7 @@ fi
 if [ "$TARGET" != "127.0.0.1" ] && [ "$NETWORK_TARGET" != "127.0.0.1/32" ]; then
     echo -e "\n${MAGENTA}📊 Benchmark 3: Network Range ($NETWORK_TARGET)${NC}"
 
-    measure_performance "NullScan" "$NULLSCAN_PATH --target $NETWORK_TARGET --top100 --max-hosts 5" "Network Range"
+    measure_performance "NullScan" "$NULLSCAN_PATH --target $NETWORK_TARGET --top100 --ping-sweep --ping-timeout 500 --max-hosts 30 --concurrency 300" "Network Range"
 
     if [ "$SKIP_EXTERNAL" != "true" ] && command -v nmap > /dev/null 2>&1; then
         measure_performance "Nmap" "nmap --top-ports 100 $NETWORK_TARGET" "Network Range"

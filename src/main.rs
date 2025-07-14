@@ -56,6 +56,10 @@ struct Args {
     #[arg(long, default_value = "3000")]
     timeout: u64,
 
+    /// Ping sweep timeout in milliseconds (faster detection for dead hosts)
+    #[arg(long, default_value = "800")]
+    ping_timeout: u64,
+
     /// Grab service banners with intelligent protocol probing
     #[arg(short = 'b', long)]
     banners: bool,
@@ -144,7 +148,7 @@ async fn main() -> Result<()> {
     // Perform ping sweep if requested
     let final_targets = if args.ping_sweep {
         info!("🏓 Ping sweep enabled, checking host availability...");
-        let alive_hosts = scanner::ping_sweep(&targets, args.timeout, args.concurrency).await;
+        let alive_hosts = scanner::ping_sweep(&targets, args.ping_timeout, args.concurrency).await;
 
         if alive_hosts.is_empty() {
             warn!("No hosts responded to ping sweep. Exiting.");

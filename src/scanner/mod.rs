@@ -14,19 +14,52 @@ use crate::banner::BannerGrabber;
 pub async fn ping_host(target: IpAddr, timeout_ms: u64) -> bool {
     debug!("Pinging {target}");
 
-    // For IPv4, try TCP connect to common ports (80, 443, 22) as a ping substitute
-    // This is more reliable than ICMP ping which often gets blocked
-    let common_ports = [80, 443, 22, 21, 25, 53, 110, 143, 993, 995];
+    // Optimized port selection for faster dead host detection
+    // Test most common ports in parallel for faster response
+    let primary_ports = [80, 443, 22, 135, 445]; // Web, SSH, and Windows common ports
 
-    for port in common_ports {
+    // Test primary ports in parallel with shorter timeout
+    let primary_timeout = Duration::from_millis(timeout_ms / 2);
+    let mut tasks = Vec::new();
+
+    for port in primary_ports {
+        let addr = SocketAddr::new(target, port);
+        let task = tokio::spawn(async move {
+            match timeout(primary_timeout, TcpStream::connect(addr)).await {
+                Ok(Ok(_)) => {
+                    debug!("Host {target} is reachable (TCP connect to port {port})");
+                    true
+                }
+                Ok(Err(_)) => {
+                    // Connection refused - host is up but port is closed
+                    debug!("Host {target} is reachable (connection refused on port {port})");
+                    true
+                }
+                Err(_) => {
+                    // Timeout
+                    false
+                }
+            }
+        });
+        tasks.push(task);
+    }
+
+    // Wait for first success or all failures
+    let results = join_all(tasks).await;
+    for result in results.into_iter().flatten() {
+        if result {
+            return true;
+        }
+    }
+
+    // If primary ports failed, try secondary ports sequentially (fallback)
+    let secondary_ports = [21, 25, 53, 110, 993, 995];
+    let secondary_timeout = Duration::from_millis(timeout_ms / 4);
+
+    for port in secondary_ports {
         let addr = SocketAddr::new(target, port);
 
-        match timeout(
-            Duration::from_millis(timeout_ms / 2),
-            TcpStream::connect(addr),
-        )
-        .await
-        {
+        match timeout(secondary_timeout, TcpStream::connect(addr)).await {
             Ok(Ok(_)) => {
                 debug!("Host {target} is reachable (TCP connect to port {port})");
                 return true;
