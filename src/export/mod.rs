@@ -14,6 +14,27 @@ pub enum ExportFormat {
     Html,
 }
 
+fn format_timestamp(timestamp_str: &str) -> String {
+    // Try to parse the RFC3339 timestamp and format it nicely
+    if let Ok(dt) = chrono::DateTime::parse_from_rfc3339(timestamp_str) {
+        // Convert to local time
+        let local_dt = dt.with_timezone(&chrono::Local);
+        // Try to format with timezone name, fallback to offset if name is not available
+        let formatted = local_dt.format("%B %d, %Y at %I:%M:%S %p").to_string();
+        let tz_name = local_dt.format("%Z").to_string();
+
+        // If timezone name is just the offset (like +00:00), show it differently
+        if tz_name.starts_with('+') || tz_name.starts_with('-') {
+            format!("{formatted} (UTC {tz_name})")
+        } else {
+            format!("{formatted} {tz_name}")
+        }
+    } else {
+        // Fallback to original if parsing fails
+        timestamp_str.to_string()
+    }
+}
+
 pub async fn export_results(
     results: &[ScanResult],
     report: &HashMap<String, String>,
@@ -81,7 +102,7 @@ fn export_to_markdown(results: &[ScanResult], report: &HashMap<String, String>) 
     ));
     output.push_str(&format!(
         "- **Timestamp:** {}\n\n",
-        report.get("timestamp").unwrap_or(&"Unknown".to_string())
+        format_timestamp(report.get("timestamp").unwrap_or(&"Unknown".to_string()))
     ));
 
     // Group open ports by host IP
@@ -237,10 +258,12 @@ fn export_to_html(results: &[ScanResult], report: &HashMap<String, String>) -> S
     }
 
     let is_multi_host = targets.len() > 1;
-    let timestamp = report
-        .get("timestamp")
-        .map(|s| s.as_str())
-        .unwrap_or("Unknown");
+    let timestamp = format_timestamp(
+        report
+            .get("timestamp")
+            .map(|s| s.as_str())
+            .unwrap_or("Unknown"),
+    );
     let scan_duration = report
         .get("scan_duration")
         .map(|s| s.as_str())
