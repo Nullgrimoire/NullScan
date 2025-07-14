@@ -217,7 +217,7 @@ pub struct VulnDbStats {
 #[allow(dead_code)]
 pub fn create_sample_database() -> VulnDatabase {
     VulnDatabase {
-        version: "1.0.0".to_string(),
+        version: "1.5.0".to_string(),
         last_updated: "2025-07-13".to_string(),
         patterns: vec![
             ServicePattern {
