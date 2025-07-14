@@ -15,12 +15,47 @@
 - 🏷️ **Advanced Service Detection** - Intelligent protocol probing with confidence scoring
 - 📡 **Enhanced Banner Grabbing** - Protocol-specific probes for SSH, TLS, HTTP, databases, and more
 - 📊 **Multiple Export Formats** - JSON, Markdown, CSV, and HTML output options with IP-grouped results
+- 🛡️ **Vulnerability Assessment** - Offline CVE database checking with severity classification
 - 🎨 **Rich CLI Interface** - Progress bars and colored output
 - ⚡ **High Performance** - Built with Tokio for maximum concurrency
 - 🔧 **Configurable** - Timeout, concurrency, and output customization
 - 🌐 **Cross-Platform** - Works on Windows, macOS, and Linux
 
-## 🔍 Service Detection & Protocol Probing
+## �️ Vulnerability Assessment
+
+NullScan includes an offline vulnerability database for real-time security assessment:
+
+### Features
+
+- **Offline CVE Database** - Local vulnerability checking with `--vuln-check` flag
+- **Pattern Matching** - Regex, substring, and version-based vulnerability detection
+- **Severity Classification** - Critical, High, Medium, Low, Info levels with CVSS scoring
+- **Real-time Results** - Vulnerabilities displayed in scan output with CVE references
+- **Extensible Database** - JSON-based vulnerability database for easy updates
+
+### Example Usage
+
+```bash
+# Basic vulnerability scanning
+nullscan --target 192.168.1.100 --top100 --banners --vuln-check
+
+# Comprehensive security assessment
+nullscan --target 192.168.1.0/24 --top1000 --banners --vuln-check --format html --output security_report.html
+
+# Quick vulnerability check on web services
+nullscan --target example.com --ports 80,443,8080 --banners --vuln-check
+```
+
+### Sample Output
+
+```bash
+# Results show vulnerability information:
+# Port 22  | SSH     | SSH-2.0-OpenSSH_7.4 | ⚠️  CVE-2018-15473: SSH Username Enumeration
+# Port 80  | HTTP    | Apache/2.4.29       | 🔴 CVE-2019-0211: Apache HTTP Privilege Escalation
+# Port 443 | HTTPS   | OpenSSL/1.0.2k      | 🔴 CVE-2016-2107: OpenSSL Padding Oracle Attack
+```
+
+## �🔍 Service Detection & Protocol Probing
 
 NullScan uses intelligent protocol-specific probes to accurately identify services, even when they don't send immediate banners:
 
@@ -122,6 +157,9 @@ nullscan --target 10.0.0.0/24 --ping-sweep --top100
 # Scan specific ports with banner grabbing
 nullscan --target example.com --ports 22,80,443 --banners
 
+# Vulnerability assessment with banner grabbing
+nullscan --target 192.168.1.100 --top100 --banners --vuln-check
+
 # High-speed network scan with parallel hosts and JSON output
 nullscan --target 10.0.0.0/24 --top1000 --max-hosts 8 --format json --output network_scan.json
 
@@ -147,7 +185,8 @@ Options:
       --max-hosts <MAX_HOSTS>      Maximum concurrent hosts to scan (for CIDR ranges) [default: 1]
       --ping-sweep                 Perform ping sweep before port scanning (skip unreachable hosts)
       --timeout <TIMEOUT>          Connection timeout in milliseconds [default: 3000]
-  -b, --banners                    Grab service banners
+  -b, --banners                    Grab service banners with intelligent protocol probing
+      --vuln-check                 Check for known vulnerabilities based on service banners
   -f, --format <FORMAT>            Export format (json, markdown, csv, html) [default: markdown]
   -o, --output <OUTPUT>            Output file path
   -v, --verbose                    Verbose output
@@ -289,11 +328,14 @@ nullscan --target db-server.local --ports 3306,5432,1433,27017 --banners
 
 ### Security Assessment
 ```bash
-# Comprehensive scan with banners
-nullscan --target 192.168.1.0/24 --ping-sweep --top1000 --banners --max-hosts 5
+# Comprehensive scan with banners and vulnerability checking
+nullscan --target 192.168.1.0/24 --ping-sweep --top1000 --banners --vuln-check --max-hosts 5
 
-# Fast reconnaissance
-nullscan --target target-range.txt --ping-sweep --top100 --format json
+# Security assessment with HTML report
+nullscan --target target-server.com --top100 --banners --vuln-check --format html --output security_audit.html
+
+# Fast reconnaissance with vulnerability analysis
+nullscan --target 10.0.0.0/24 --ping-sweep --top100 --banners --vuln-check --format json
 ```
 
 ## 🔧 Performance Optimization

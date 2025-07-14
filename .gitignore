@@ -178,6 +178,10 @@ temp/
 *_scan.html
 *_results.*
 *_report.*
+
+# Exception: Track the vulnerability database (core application data)
+# vuln_db.json contains public CVE information and is required for --vuln-check functionality
+!vuln_db.json
 scan_results.*
 network_scan.*
 localhost_range.*
