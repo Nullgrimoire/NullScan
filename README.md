@@ -168,6 +168,9 @@ nullscan --target "8.8.8.8,8.8.4.4,1.1.1.1" --ping-sweep --ports 53,80,443
 
 # Large network scan with optimal performance
 nullscan --target 172.16.0.0/16 --ping-sweep --top100 --max-hosts 20 --concurrency 200
+
+# Silent automation mode (no progress bars or logs)
+nullscan --target 10.0.0.0/22 --ping-sweep --top100 --quiet --format json --output results.json
 ```
 
 ## 📋 Command Line Options
@@ -191,6 +194,7 @@ Options:
   -f, --format <FORMAT>            Export format (json, markdown, csv, html) [default: markdown]
   -o, --output <OUTPUT>            Output file path
   -v, --verbose                    Verbose output
+  -q, --quiet                      Quiet mode - suppress progress bars and non-essential output
   -h, --help                       Print help
   -V, --version                    Print version
 ```

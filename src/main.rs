@@ -79,6 +79,10 @@ struct Args {
     /// Verbose output
     #[arg(short, long)]
     verbose: bool,
+
+    /// Quiet mode - suppress progress bars and non-essential output
+    #[arg(short, long)]
+    quiet: bool,
 }
 
 #[tokio::main]
@@ -86,7 +90,12 @@ async fn main() -> Result<()> {
     let args = Args::parse();
 
     // Initialize logger
-    if args.verbose {
+    if args.quiet {
+        // In quiet mode, only show errors
+        env_logger::Builder::from_default_env()
+            .filter_level(log::LevelFilter::Error)
+            .init();
+    } else if args.verbose {
         env_logger::Builder::from_default_env()
             .filter_level(log::LevelFilter::Debug)
             .init();
@@ -147,19 +156,25 @@ async fn main() -> Result<()> {
 
     // Perform ping sweep if requested
     let final_targets = if args.ping_sweep {
-        info!("🏓 Ping sweep enabled, checking host availability...");
-        let alive_hosts = scanner::ping_sweep(&targets, args.ping_timeout, args.concurrency).await;
+        if !args.quiet {
+            info!("🏓 Ping sweep enabled, checking host availability...");
+        }
+        let alive_hosts = scanner::ping_sweep(&targets, args.ping_timeout, args.concurrency, args.quiet).await;
 
         if alive_hosts.is_empty() {
-            warn!("No hosts responded to ping sweep. Exiting.");
+            if !args.quiet {
+                warn!("No hosts responded to ping sweep. Exiting.");
+            }
             return Ok(());
         }
 
-        info!(
-            "📊 Ping sweep reduced targets from {} to {} hosts",
-            targets.len(),
-            alive_hosts.len()
-        );
+        if !args.quiet {
+            info!(
+                "📊 Ping sweep reduced targets from {} to {} hosts",
+                targets.len(),
+                alive_hosts.len()
+            );
+        }
         alive_hosts
     } else {
         targets
@@ -186,7 +201,9 @@ async fn main() -> Result<()> {
             // Acquire semaphore permit
             let _permit = host_semaphore.acquire().await.unwrap();
 
-            info!("📡 Scanning target {}/{}: {}", i + 1, total_targets, target);
+            if !args.quiet {
+                info!("📡 Scanning target {}/{}: {}", i + 1, total_targets, target);
+            }
 
             // Create scan configuration for this target
             let config = ScanConfig {
@@ -195,6 +212,7 @@ async fn main() -> Result<()> {
                 concurrency,
                 timeout_ms: timeout,
                 grab_banners,
+                quiet: args.quiet,
             };
 
             // Perform scan
@@ -240,7 +258,9 @@ async fn main() -> Result<()> {
         export::export_results(&combined_results, &report, args.format, args.output).await?;
     }
 
-    info!("✅ Scan completed in {scan_duration:.2?}");
+    if !args.quiet {
+        info!("✅ Scan completed in {scan_duration:.2?}");
+    }
     Ok(())
 }
 

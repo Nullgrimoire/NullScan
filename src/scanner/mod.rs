@@ -81,16 +81,23 @@ pub async fn ping_host(target: IpAddr, timeout_ms: u64) -> bool {
 }
 
 /// Perform ping sweep on multiple hosts
-pub async fn ping_sweep(targets: &[IpAddr], timeout_ms: u64, concurrency: usize) -> Vec<IpAddr> {
-    info!("🏓 Starting ping sweep for {} hosts", targets.len());
+pub async fn ping_sweep(targets: &[IpAddr], timeout_ms: u64, concurrency: usize, quiet: bool) -> Vec<IpAddr> {
+    if !quiet {
+        info!("🏓 Starting ping sweep for {} hosts", targets.len());
+    }
 
-    let progress = ProgressBar::new(targets.len() as u64);
-    progress.set_style(
-        ProgressStyle::default_bar()
-            .template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos}/{len} hosts ({eta})")
-            .unwrap()
-            .progress_chars("#>-"),
-    );
+    let progress = if quiet {
+        ProgressBar::hidden()
+    } else {
+        let pb = ProgressBar::new(targets.len() as u64);
+        pb.set_style(
+            ProgressStyle::default_bar()
+                .template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos}/{len} hosts ({eta})")
+                .unwrap()
+                .progress_chars("#>-"),
+        );
+        pb
+    };
 
     let semaphore = Arc::new(tokio::sync::Semaphore::new(concurrency));
     let mut tasks = Vec::new();
@@ -116,18 +123,22 @@ pub async fn ping_sweep(targets: &[IpAddr], timeout_ms: u64, concurrency: usize)
     }
 
     let results = join_all(tasks).await;
-    progress.finish_with_message("Ping sweep completed");
+    if !quiet {
+        progress.finish_with_message("Ping sweep completed");
+    }
 
     let alive_hosts: Vec<IpAddr> = results
         .into_iter()
         .filter_map(|r| r.ok().flatten())
         .collect();
 
-    info!(
-        "✅ Ping sweep found {}/{} hosts alive",
-        alive_hosts.len(),
-        targets.len()
-    );
+    if !quiet {
+        info!(
+            "✅ Ping sweep found {}/{} hosts alive",
+            alive_hosts.len(),
+            targets.len()
+        );
+    }
     alive_hosts
 }
 
@@ -138,6 +149,7 @@ pub struct ScanConfig {
     pub concurrency: usize,
     pub timeout_ms: u64,
     pub grab_banners: bool,
+    pub quiet: bool,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -194,18 +206,25 @@ impl Scanner {
         vuln_checker: Option<&crate::vuln::VulnChecker>,
     ) -> Result<Vec<ScanResult>> {
         let total_ports = self.config.ports.len();
-        info!(
-            "🔍 Scanning {} ports on {}",
-            total_ports, self.config.target
-        );
+        if !self.config.quiet {
+            info!(
+                "🔍 Scanning {} ports on {}",
+                total_ports, self.config.target
+            );
+        }
 
-        // Create progress bar
-        let pb = ProgressBar::new(total_ports as u64);
-        pb.set_style(
-            ProgressStyle::default_bar()
-                .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ports ({eta})")?
-                .progress_chars("#>-"),
-        );
+        // Create progress bar (hidden in quiet mode)
+        let pb = if self.config.quiet {
+            ProgressBar::hidden()
+        } else {
+            let pb = ProgressBar::new(total_ports as u64);
+            pb.set_style(
+                ProgressStyle::default_bar()
+                    .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ports ({eta})")?
+                    .progress_chars("#>-"),
+            );
+            pb
+        };
 
         // Create semaphore for concurrency control
         let semaphore = Arc::new(tokio::sync::Semaphore::new(self.config.concurrency));
