@@ -1,11 +1,6 @@
 # 🔍 NullScan
 
-[![CI/CD Pipeline](https://github.com/Nullgrimoire/NullScan/actions/workflows/ci.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/ci.yml)
-[![Release](https://github.com/Nullgrimoire/NullScan/actions/workflows/release.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/release.yml)
-[![Security Audit](https://github.com/Nullgrimoire/NullScan/actions/workflows/maintenance.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/maintenance.yml)
-[![Documentation](https://github.com/Nullgrimoire/NullScan/actions/workflows/docs.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/docs.yml)
-[![Demo Scripts](https://github.com/Nullgrimoire/NullScan/actions/workflows/demo-scripts.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/demo-scripts.yml)
-[![Latest Release](https://img.shields.io/github/v/release/Nullgrimoire/NullScan)](https://github.com/Nullgrimoire/NullScan/releases/latest)
+[![Tests](https://github.com/Nullgrimoire/NullScan/actions/workflows/test.yml/badge.svg)](https://github.com/Nullgrimoire/NullScan/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **NullScan** is a fast, cross-platform Rust tool for scanning TCP ports and grabbing service banners. It supports full scans, top 100/1000 presets, and exports results to Markdown — built for speed, clarity, and recon precision.
@@ -65,36 +60,7 @@ nullscan --target 192.168.1.100 --ports 22,80,443,3306 --banners
 
 ## 🚀 Installation
 
-### Option 1: Download Prebuilt Binaries (Recommended)
-
-**🚀 One-Line Install (Linux/macOS):**
-```bash
-curl -sSL https://raw.githubusercontent.com/Nullgrimoire/NullScan/master/scripts/install.sh | bash
-```
-
-**🪟 One-Line Install (Windows PowerShell):**
-```powershell
-iwr -useb https://raw.githubusercontent.com/Nullgrimoire/NullScan/master/scripts/install.ps1 | iex
-```
-
-**📦 Manual Download:**
-1. Go to [Releases](https://github.com/Nullgrimoire/NullScan/releases/latest)
-2. Download the appropriate binary for your platform:
-   - **🐧 Linux**: `nullscan-linux-amd64.tar.gz` (most common)
-   - **🪟 Windows**: `nullscan-windows-amd64.zip` (most common)  
-   - **🍎 macOS**: `nullscan-macos-amd64.tar.gz` (Intel) or `nullscan-macos-arm64.tar.gz` (Apple Silicon)
-3. Extract and run: `./nullscan --help`
-
-**🔐 Verify Downloads:**
-```bash
-# Linux/macOS - verify with included checksums
-sha256sum -c nullscan-*.sha256
-
-# Windows - verify manually
-certutil -hashfile nullscan-*.zip SHA256
-```
-
-### Option 2: Build from Source
+### Build from Source
 
 **Prerequisites:**
 - Rust 1.70+ ([Install Rust](https://rustup.rs/))
@@ -111,13 +77,10 @@ cargo build --release
 ./target/release/nullscan --help
 ```
 
-### Option 3: Install via Cargo
+### Install via Cargo
 
 ```bash
-# Install directly from crates.io (when published)
-cargo install nullscan
-
-# Or install from GitHub
+# Install from GitHub
 cargo install --git https://github.com/Nullgrimoire/NullScan.git
 ```
 
