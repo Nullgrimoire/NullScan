@@ -224,7 +224,7 @@ nullscan --target 10.0.0.0/22 --ping-sweep --top100
 # Result: 2.07 seconds vs 240+ seconds with Nmap - 115x faster!
 ```
 
-> 📖 **For advanced ping sweep optimization techniques, performance tuning parameters, and technical implementation details, see [PING_SWEEP_OPTIMIZATION.md](PING_SWEEP_OPTIMIZATION.md)**
+> 📖 **For advanced ping sweep optimization techniques, performance tuning parameters, and technical implementation details, see [docs/ping-sweep-optimization.md](docs/ping-sweep-optimization.md)**
 
 ## ⚡ Fast Mode Feature
 
@@ -457,7 +457,7 @@ NullScan is designed for speed and efficiency. Here are some performance compari
 - **🏓 Intelligent Ping Sweep**: Skip dead hosts to focus on live targets
 - **💾 Memory Efficient**: Low memory footprint even with high concurrency
 
-For detailed performance comparisons with other scanners, see [BENCHMARKS.md](BENCHMARKS.md).
+For detailed performance comparisons with other scanners, see [docs/benchmarks.md](docs/benchmarks.md).
 
 ### Real-World Performance
 
@@ -535,7 +535,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Inspired by classic network scanning tools
 - Thanks to the Rust community for excellent async libraries
 
-## 💖 Support
+## � Documentation
+
+For comprehensive technical documentation and development guides, visit the **[docs/](docs/)** directory:
+
+- **[Performance Benchmarks](docs/benchmarks.md)** - Detailed performance comparisons with industry tools
+- **[Ping Sweep Optimization](docs/ping-sweep-optimization.md)** - Technical deep-dive into network scanning algorithms
+
+## �💖 Support
 
 If you find NullScan helpful, consider supporting the project:
 

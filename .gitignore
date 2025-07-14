@@ -125,6 +125,8 @@ perf.data*
 # Benchmark outputs
 criterion/
 benchmarks/
+benchmark_results_*.csv
+benchmark_results_*.json
 
 # Test artifacts
 *.test
@@ -227,7 +229,7 @@ notes/
 dev_notes.*
 TODO.md
 DEVLOG.md
-DEVELOPMENT.md
+docs/development.md
 
 # ==============================================================================
 # GitHub Internal Files
