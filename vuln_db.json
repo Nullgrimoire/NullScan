@@ -1,17 +1,17 @@
 {
-  "version": "2.0.0",
+  "version": "2.0.1",
   "last_updated": "2025-07-13",
-  "description": "Comprehensive vulnerability database for NullScan covering 50+ CVEs across SSH, HTTP, databases, remote access, and network services",
-  "total_patterns": 45,
+  "description": "Comprehensive vulnerability database for NullScan covering 50+ CVEs across SSH, HTTP, databases, remote access, and network services (duplicates removed)",
+  "total_patterns": 44,
   "coverage": {
-    "SSH": 6,
-    "HTTP": 12,
-    "Database": 8,
-    "FTP": 3,
+    "SSH": 4,
+    "HTTP": 10,
+    "Database": 5,
+    "FTP": 2,
     "DNS": 2,
-    "SMTP": 2,
+    "SMTP": 1,
     "Remote_Access": 8,
-    "Network_Services": 4
+    "Network_Services": 12
   },
   "patterns": [
     {
@@ -98,22 +98,7 @@
         }
       ]
     },
-    {
-      "pattern": "contains:ssh-2.0-openssh_8.0",
-      "service_type": "SSH",
-      "vulnerabilities": [
-        {
-          "cve": "CVE-2020-14145",
-          "description": "The client side in OpenSSH 5.7 through 8.4 has an Observable Discrepancy leading to an information leak in the algorithm negotiation. This allows man-in-the-middle attackers to target initial connection attempts (where no host key for the server has been cached by the client).",
-          "severity": "Medium",
-          "cvss_score": 5.9,
-          "published": "2020-12-02",
-          "references": [
-            "https://nvd.nist.gov/vuln/detail/CVE-2020-14145"
-          ]
-        }
-      ]
-    },
+
     {
       "pattern": "contains:apache/2.4.29",
       "service_type": "HTTP",
@@ -185,7 +170,7 @@
       "vulnerabilities": [
         {
           "cve": "CVE-2017-0144",
-          "description": "The SMBv1 server in Microsoft Windows Vista SP2; Windows Server 2008 SP2 and R2 SP1; Windows 7 SP1; Windows 8.1; Windows Server 2012 Gold and R2; Windows RT 8.1; and Windows 10 Gold, 1511, and 1607; and Windows Server 2016 allows remote attackers to execute arbitrary code via crafted packets, aka 'Windows SMB Remote Code Execution Vulnerability'.",
+          "description": "The SMBv1 server in Microsoft Windows allows remote attackers to execute arbitrary code via crafted packets, aka 'Windows SMB Remote Code Execution Vulnerability' (EternalBlue). Affects SMB and NetBIOS services.",
           "severity": "Critical",
           "cvss_score": 8.1,
           "published": "2017-03-16",
@@ -211,22 +196,7 @@
         }
       ]
     },
-    {
-      "pattern": "openssh 7.6",
-      "service_type": "SSH",
-      "vulnerabilities": [
-        {
-          "cve": "CVE-2018-15473",
-          "description": "OpenSSH through 7.7 is prone to a user enumeration vulnerability due to not delaying bailout for an invalid authenticating user until after the packet containing the request has been fully parsed.",
-          "severity": "Medium",
-          "cvss_score": 5.3,
-          "published": "2018-08-17",
-          "references": [
-            "https://nvd.nist.gov/vuln/detail/CVE-2018-15473"
-          ]
-        }
-      ]
-    },
+
     {
       "pattern": "openssh 6.6",
       "service_type": "SSH",
@@ -259,22 +229,7 @@
         }
       ]
     },
-    {
-      "pattern": "apache 2.4.29",
-      "service_type": "HTTP",
-      "vulnerabilities": [
-        {
-          "cve": "CVE-2018-1312",
-          "description": "In Apache httpd 2.2.0 to 2.4.29, when generating an HTTP Digest authentication challenge, the nonce sent to prevent reply attacks was not correctly generated using a pseudo-random seed.",
-          "severity": "Medium",
-          "cvss_score": 5.9,
-          "published": "2018-03-26",
-          "references": [
-            "https://nvd.nist.gov/vuln/detail/CVE-2018-1312"
-          ]
-        }
-      ]
-    },
+
     {
       "pattern": "nginx 1.16.1",
       "service_type": "HTTP",
@@ -291,22 +246,7 @@
         }
       ]
     },
-    {
-      "pattern": "nginx 1.14.2",
-      "service_type": "HTTP",
-      "vulnerabilities": [
-        {
-          "cve": "CVE-2019-20372",
-          "description": "NGINX before 1.17.7, with certain error_page configurations, allows HTTP request smuggling.",
-          "severity": "Medium",
-          "cvss_score": 5.3,
-          "published": "2020-01-09",
-          "references": [
-            "https://nvd.nist.gov/vuln/detail/CVE-2019-20372"
-          ]
-        }
-      ]
-    },
+
     {
       "pattern": "mysql 5.7.33",
       "service_type": "Database",
@@ -323,22 +263,7 @@
         }
       ]
     },
-    {
-      "pattern": "mysql 8.0.23",
-      "service_type": "Database",
-      "vulnerabilities": [
-        {
-          "cve": "CVE-2021-2144",
-          "description": "Vulnerability in the MySQL Server product of Oracle MySQL (component: Server: Parser). Easily exploitable vulnerability allows high privileged attacker with network access via multiple protocols to compromise MySQL Server.",
-          "severity": "Medium",
-          "cvss_score": 5.5,
-          "published": "2021-04-20",
-          "references": [
-            "https://nvd.nist.gov/vuln/detail/CVE-2021-2144"
-          ]
-        }
-      ]
-    },
+
     {
       "pattern": "contains:ssh-2.0-openssh_7.4",
       "service_type": "SSH",
@@ -355,22 +280,7 @@
         }
       ]
     },
-    {
-      "pattern": "contains:ssh-2.0-openssh_6.6",
-      "service_type": "SSH",
-      "vulnerabilities": [
-        {
-          "cve": "CVE-2016-0777",
-          "description": "The resend_bytes function in roaming_common.c in the client in OpenSSH 5.4 through 7.1 allows remote servers to obtain sensitive information from process memory.",
-          "severity": "Medium",
-          "cvss_score": 5.9,
-          "published": "2016-01-14",
-          "references": [
-            "https://nvd.nist.gov/vuln/detail/CVE-2016-0777"
-          ]
-        }
-      ]
-    },
+
     {
       "pattern": "contains:proftpd",
       "service_type": "FTP",
@@ -504,13 +414,13 @@
       "service_type": "RSH",
       "vulnerabilities": [
         {
-          "cve": "CVE-1999-0651",
+          "cve": "CVE-1999-0183",
           "description": "RSH (Remote Shell) allows remote command execution without proper authentication in legacy configurations.",
           "severity": "Critical",
           "cvss_score": 10.0,
-          "published": "1999-09-01",
+          "published": "1999-03-01",
           "references": [
-            "https://nvd.nist.gov/vuln/detail/CVE-1999-0651"
+            "https://nvd.nist.gov/vuln/detail/CVE-1999-0183"
           ]
         }
       ]
@@ -563,22 +473,7 @@
         }
       ]
     },
-    {
-      "pattern": "contains:netbios-ssn",
-      "service_type": "NetBIOS",
-      "vulnerabilities": [
-        {
-          "cve": "CVE-2017-0144",
-          "description": "The SMBv1 server in Microsoft Windows allows remote attackers to execute arbitrary code via crafted packets, aka 'Windows SMB Remote Code Execution Vulnerability' (EternalBlue).",
-          "severity": "Critical",
-          "cvss_score": 8.1,
-          "published": "2017-03-16",
-          "references": [
-            "https://nvd.nist.gov/vuln/detail/CVE-2017-0144"
-          ]
-        }
-      ]
-    },
+
     {
       "pattern": "contains:ms-wbt-server",
       "service_type": "RDP",
@@ -815,6 +710,23 @@
           "published": "2019-04-24",
           "references": [
             "https://nvd.nist.gov/vuln/detail/CVE-2019-11510"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:apache/2.4.7",
+      "service_type": "HTTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2014-0226",
+          "description": "A race condition was found in mod_status in Apache HTTP Server 2.4.7. This could allow a worker process handling a status request to be replaced by another worker process, leading to potential memory disclosure or privilege escalation.",
+          "severity": "High",
+          "cvss_score": 6.8,
+          "published": "2014-06-05",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2014-0226",
+            "https://httpd.apache.org/security/vulnerabilities_24.html"
           ]
         }
       ]

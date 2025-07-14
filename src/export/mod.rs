@@ -114,40 +114,66 @@ fn export_to_markdown(results: &[ScanResult], report: &HashMap<String, String>) 
         if sorted_hosts.len() == 1 {
             // Single host - use simple table format
             let (_, host_results) = sorted_hosts[0];
-            output.push_str("| Port | Service | Banner | Response Time |\n");
-            output.push_str("|------|---------|--------|--------------|\n");
+            output.push_str("| Port | Service | Banner | Response Time | Vulnerabilities |\n");
+            output.push_str("|------|---------|--------|--------------|----------------|\n");
 
             for result in host_results {
                 let service = result.service.as_deref().unwrap_or("Unknown");
                 let banner = result.banner.as_deref().unwrap_or("N/A");
                 let response_time = format!("{}ms", result.response_time.as_millis());
 
+                // Format vulnerabilities
+                let vulnerabilities = if result.vulnerabilities.is_empty() {
+                    "None".to_string()
+                } else {
+                    result
+                        .vulnerabilities
+                        .iter()
+                        .map(|v| format!("🔴 {} ({})", v.cve, v.severity.to_string()))
+                        .collect::<Vec<_>>()
+                        .join("<br>")
+                };
+
                 output.push_str(&format!(
-                    "| {} | {} | {} | {} |\n",
+                    "| {} | {} | {} | {} | {} |\n",
                     result.port,
                     service,
                     banner.replace('|', "\\|"), // Escape pipes for markdown
-                    response_time
+                    response_time,
+                    vulnerabilities.replace('|', "\\|")
                 ));
             }
         } else {
             // Multiple hosts - group by host IP
             for (host_ip, host_results) in sorted_hosts {
                 output.push_str(&format!("### 🖥️ Host: {host_ip}\n\n"));
-                output.push_str("| Port | Service | Banner | Response Time |\n");
-                output.push_str("|------|---------|--------|--------------|\n");
+                output.push_str("| Port | Service | Banner | Response Time | Vulnerabilities |\n");
+                output.push_str("|------|---------|--------|--------------|----------------|\n");
 
                 for result in host_results {
                     let service = result.service.as_deref().unwrap_or("Unknown");
                     let banner = result.banner.as_deref().unwrap_or("N/A");
                     let response_time = format!("{}ms", result.response_time.as_millis());
 
+                    // Format vulnerabilities
+                    let vulnerabilities = if result.vulnerabilities.is_empty() {
+                        "None".to_string()
+                    } else {
+                        result
+                            .vulnerabilities
+                            .iter()
+                            .map(|v| format!("🔴 {} ({})", v.cve, v.severity.to_string()))
+                            .collect::<Vec<_>>()
+                            .join("<br>")
+                    };
+
                     output.push_str(&format!(
-                        "| {} | {} | {} | {} |\n",
+                        "| {} | {} | {} | {} | {} |\n",
                         result.port,
                         service,
                         banner.replace('|', "\\|"), // Escape pipes for markdown
-                        response_time
+                        response_time,
+                        vulnerabilities.replace('|', "\\|")
                     ));
                 }
                 output.push('\n');
@@ -165,7 +191,7 @@ fn export_to_csv(results: &[ScanResult]) -> String {
     let mut output = String::new();
 
     // Header
-    output.push_str("Port,Status,Service,Banner,ResponseTime(ms)\n");
+    output.push_str("Port,Status,Service,Banner,ResponseTime(ms),Vulnerabilities\n");
 
     // Data
     for result in results.iter().filter(|r| r.is_open) {
@@ -173,12 +199,25 @@ fn export_to_csv(results: &[ScanResult]) -> String {
         let banner = result.banner.as_deref().unwrap_or("N/A");
         let response_time = result.response_time.as_millis();
 
+        // Format vulnerabilities for CSV
+        let vulnerabilities = if result.vulnerabilities.is_empty() {
+            "None".to_string()
+        } else {
+            result
+                .vulnerabilities
+                .iter()
+                .map(|v| format!("{} ({})", v.cve, v.severity.to_string()))
+                .collect::<Vec<_>>()
+                .join("; ")
+        };
+
         output.push_str(&format!(
-            "{},Open,\"{}\",\"{}\",{}\n",
+            "{},Open,\"{}\",\"{}\",{},\"{}\"\n",
             result.port,
             service,
             banner.replace('"', "\"\""), // Escape quotes for CSV
-            response_time
+            response_time,
+            vulnerabilities.replace('"', "\"\"") // Escape quotes for CSV
         ));
     }
 
@@ -438,6 +477,15 @@ fn export_to_html(results: &[ScanResult], report: &HashMap<String, String>) -> S
             color: #374151;
         }}
 
+        .vuln-cell {{
+            font-size: 0.85rem;
+            max-width: 300px;
+        }}
+
+        .vuln-cell div {{
+            padding: 2px 0;
+        }}
+
         .response-time {{
             color: var(--success-color);
             font-weight: 600;
@@ -603,7 +651,8 @@ fn export_to_html(results: &[ScanResult], report: &HashMap<String, String>) -> S
                                 <th onclick="sortTable('{}', 0)">Port</th>
                                 <th onclick="sortTable('{}', 1)">Service</th>
                                 <th onclick="sortTable('{}', 2)">Banner</th>
-                                <th onclick="sortTable('{}', 3)">Response Time</th>
+                                <th onclick="sortTable('{}', 3)">Vulnerabilities</th>
+                                <th onclick="sortTable('{}', 4)">Response Time</th>
                             </tr>
                         </thead>
                         <tbody id="tbody_{}">
@@ -611,6 +660,7 @@ fn export_to_html(results: &[ScanResult], report: &HashMap<String, String>) -> S
                 host_id,
                 target_ip,
                 target_results.len(),
+                host_id,
                 host_id,
                 host_id,
                 host_id,
@@ -624,18 +674,45 @@ fn export_to_html(results: &[ScanResult], report: &HashMap<String, String>) -> S
                 let banner = result.banner.as_deref().unwrap_or("N/A");
                 let response_time = result.response_time.as_millis();
 
+                // Format vulnerabilities for HTML
+                let vulnerabilities_html = if result.vulnerabilities.is_empty() {
+                    "<span style=\"color: #6b7280;\">None</span>".to_string()
+                } else {
+                    result
+                        .vulnerabilities
+                        .iter()
+                        .map(|v| {
+                            let severity_str = v.severity.to_string();
+                            let color = match severity_str {
+                                "Critical" => "#dc2626",
+                                "High" => "#ea580c",
+                                "Medium" => "#d97706",
+                                "Low" => "#059669",
+                                _ => "#6b7280",
+                            };
+                            format!(
+                                "<div style=\"color: {}; font-weight: 600; margin: 2px 0;\">🔴 {} ({})</div>",
+                                color, v.cve, severity_str
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                        .join("")
+                };
+
                 html.push_str(&format!(
                     r#"
                             <tr>
                                 <td><span class="port-number">{}</span></td>
                                 <td><span class="service-tag">{}</span></td>
                                 <td><div class="banner-text">{}</div></td>
+                                <td><div class="vuln-cell">{}</div></td>
                                 <td><span class="response-time">{}ms</span></td>
                             </tr>
 "#,
                     result.port,
                     service,
                     html_escape(banner),
+                    vulnerabilities_html,
                     response_time
                 ));
             }
@@ -697,7 +774,7 @@ fn export_to_html(results: &[ScanResult], report: &HashMap<String, String>) -> S
                 const bVal = b.cells[columnIndex].textContent.trim();
 
                 // Special handling for port numbers and response times
-                if (columnIndex === 0 || columnIndex === 3) {{
+                if (columnIndex === 0 || columnIndex === 4) {{
                     return parseInt(aVal) - parseInt(bVal);
                 }}
 
@@ -720,7 +797,8 @@ fn export_to_html(results: &[ScanResult], report: &HashMap<String, String>) -> S
                 const rows = group.querySelectorAll('tbody tr');
                 rows.forEach(row => {{
                     const cells = row.querySelectorAll('td');
-                    text += `Port ${{cells[0].textContent.trim()}}: ${{cells[1].textContent.trim()}} - ${{cells[2].textContent.trim()}}\\n`;
+                    const vulns = cells[3].textContent.trim() !== 'None' ? ` - Vulns: ${{cells[3].textContent.trim()}}` : '';
+                    text += `Port ${{cells[0].textContent.trim()}}: ${{cells[1].textContent.trim()}} - ${{cells[2].textContent.trim()}}${{vulns}}\\n`;
                 }});
                 text += '\\n';
             }});
