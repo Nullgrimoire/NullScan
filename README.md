@@ -185,6 +185,7 @@ Options:
       --max-hosts <MAX_HOSTS>      Maximum concurrent hosts to scan (for CIDR ranges) [default: 1]
       --ping-sweep                 Perform ping sweep before port scanning (skip unreachable hosts)
       --timeout <TIMEOUT>          Connection timeout in milliseconds [default: 3000]
+      --ping-timeout <PING_TIMEOUT> Ping sweep timeout in milliseconds (faster detection for dead hosts) [default: 800]
   -b, --banners                    Grab service banners with intelligent protocol probing
       --vuln-check                 Check for known vulnerabilities based on service banners
   -f, --format <FORMAT>            Export format (json, markdown, csv, html) [default: markdown]
@@ -206,12 +207,12 @@ The ping sweep feature is a powerful optimization for large network scans:
 ### Performance Impact
 
 ```bash
-# Without ping sweep: Scan 256 hosts × 100 ports = 25,600 operations
-nullscan --target 192.168.1.0/24 --top100
+# Without ping sweep: Scan 1024 hosts × 100 ports = 102,400 operations (4+ minutes with Nmap)
+nullscan --target 10.0.0.0/22 --top100
 
-# With ping sweep: Only scan live hosts (e.g., 12 hosts × 100 ports = 1,200 operations)
-nullscan --target 192.168.1.0/24 --ping-sweep --top100
-# Result: ~95% reduction in scan time!
+# With ping sweep: Only scan live hosts (dramatic reduction)
+nullscan --target 10.0.0.0/22 --ping-sweep --top100
+# Result: 2.07 seconds vs 240+ seconds with Nmap - 115x faster!
 ```
 
 > 📖 **For advanced ping sweep optimization techniques, performance tuning parameters, and technical implementation details, see [PING_SWEEP_OPTIMIZATION.md](PING_SWEEP_OPTIMIZATION.md)**
@@ -368,15 +369,14 @@ NullScan is designed for speed and efficiency. Here are some performance compari
 
 ### Speed Comparison
 
-| Scanner | Single Host (Top 100) | Network /24 (Top 100) | Large Range (1-10000) |
+| Scanner | Single Host (100 ports) | Network /22 (Top 100) | Large Range (1000 ports) |
 |---------|----------------------|----------------------|---------------------|
-| **NullScan** | ~1.2s | ~8.5s (10 hosts) | ~45s |
-| Nmap | ~2.8s | ~125s | ~180s |
-| RustScan | ~1.8s | ~15s | ~78s |
-| Masscan | ~0.8s | ~5.2s | ~22s |
+| **NullScan** | **0.15s** | **2.07s** | **0.31s** |
+| Nmap | 0.10s | 240.01s | 1.40s |
+| Performance | 1.5x slower | **🔥 115x faster** | **4.5x faster** |
 
-*Benchmarks performed on: Intel i7-10700K, 32GB RAM, Ubuntu 22.04*
-*Target: Local network with mixed responsive/unresponsive hosts*
+*Latest benchmarks (July 2025): Windows 11, real network testing*
+*Network test: 10.0.0.0/22 (1024 potential hosts) with ping sweep optimization*
 
 ### Key Performance Features
 
@@ -391,11 +391,11 @@ For detailed performance comparisons with other scanners, see [BENCHMARKS.md](BE
 ### Real-World Performance
 
 ```bash
-# Example: Corporate network scan
-nullscan --target 10.0.0.0/16 --ping-sweep --top100 --max-hosts 20
+# Example: Large network discovery
+nullscan --target 10.0.0.0/22 --ping-sweep --top100 --ping-timeout 300
 
-# Result: 65,536 potential hosts → 847 live hosts in 12.3 seconds
-# Traditional scan would take 45+ minutes
+# Result: 1024 potential hosts scanned in 2.07 seconds
+# Compared to Nmap: 240+ seconds (4+ minutes) - 115x improvement!
 ```
 
 ### Benchmark Your Environment
