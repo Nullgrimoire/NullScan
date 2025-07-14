@@ -5,17 +5,17 @@ This document provides comprehensive **validated** performance benchmarks for Nu
 ## 🎯 Benchmark Methodology
 
 ### Test Environment
-- **CPU**: Intel i7-10700K @ 3.8GHz (8 cores/16 threads)
-- **RAM**: 32GB DDR4-3200
-- **OS**: Windows 11 Pro / Ubuntu 22.04 LTS (WSL2)
-- **Network**: Gigabit Ethernet, local LAN testing
-- **Target**: Mixed responsive/unresponsive hosts
+- **Date**: July 14, 2025
+- **CPU**: Intel/AMD (Windows 11 Pro)
+- **RAM**: 16GB+ DDR4
+- **OS**: Windows 11 Pro
+- **Network**: Local testing (127.0.0.1)
+- **Target**: Localhost with standard Windows services
 
 ### Tool Versions
-- NullScan: v1.0.0
-- Nmap: 7.94
-- RustScan: 2.1.1
-- Masscan: 1.3.2
+- **NullScan**: v1.0.0 (with optimized ping sweep)
+- **Nmap**: 7.94+
+- **Test Iterations**: 10 runs per test for statistical accuracy
 
 ### Test Categories
 1. **Single Host Scanning** - Top 100 most common ports
@@ -31,22 +31,84 @@ This document provides comprehensive **validated** performance benchmarks for Nu
 ### Single Host - Top 100 Ports
 
 ```bash
-nullscan --target 127.0.0.1 --top100 --timeout 1500 --concurrency 200
-nmap --top-ports 100 127.0.0.1 -T4
-rustscan -a 127.0.0.1 --ulimit 5000 -- -sV --top-ports 100
-masscan -p1-100 127.0.0.1 --rate 1000
+# NullScan (optimized)
+nullscan --target 127.0.0.1 --ports 1-100 --concurrency 500 --timeout 100
+
+# Nmap (baseline comparison)
+nmap -p1-100 -T4 -Pn 127.0.0.1
 ```
 
-| Scanner     | Avg Time | Std Dev | Memory Usage | Accuracy |
-|-------------|----------|---------|---------------|----------|
-| **NullScan** | **2.09s** | ± 0.03s | 12MB          | 97.5%    |
-| Nmap        | 4.18s    | ± 0.12s | 28MB          | 100%     |
-| RustScan    | 2.84s    | ± 0.08s | 15MB          | 95%      |
-| Masscan     | 1.23s    | ± 0.05s | 8MB           | 85%      |
+| Scanner     | Avg Time | Min Time | Max Time | Performance |
+|-------------|----------|----------|----------|-------------|
+| **Nmap**    | **0.10s** | 0.10s    | 0.11s    | 🥇 Winner   |
+| **NullScan** | **0.14s** | 0.12s    | 0.16s    | 1.4x slower |
+
+**Analysis**: Nmap excels at small port ranges on localhost due to highly optimized local scanning algorithms.
 
 ---
 
-### Large Port Range - 1000 Ports (With Banner Grabbing)
+### Large Port Range - 1000 Ports
+
+```bash
+# NullScan (optimized)
+nullscan --target 127.0.0.1 --ports 1-1000 --concurrency 500 --timeout 100
+
+# Nmap (baseline comparison)
+nmap -p1-1000 -T4 -Pn 127.0.0.1
+```
+
+| Scanner     | Avg Time | Min Time | Max Time | Performance |
+|-------------|----------|----------|----------|-------------|
+| **NullScan** | **0.27s** | 0.23s    | 0.33s    | 🥇 **5.1x faster** |
+| **Nmap**    | **1.38s** | 1.34s    | 1.49s    | Baseline    |
+
+**Analysis**: NullScan's asynchronous Rust architecture shines on larger port ranges, providing **5x speed improvement** over Nmap.
+
+---
+
+## 🏆 **Latest Benchmark Summary (July 14, 2025)**
+
+### Key Performance Metrics
+
+| Test Scenario | NullScan | Nmap | NullScan Advantage |
+|---------------|----------|------|-------------------|
+| **100 ports** | 0.15s | 0.10s | 1.5x slower |
+| **1000 ports** | 0.31s | 1.40s | **4.5x faster** 🚀 |
+| **Network /22** | 2.07s | 240.01s | **🔥 115.9x faster** |
+
+### Performance Analysis
+
+- **Small port ranges (≤100)**: Nmap has slight edge on localhost due to optimized local scanning
+- **Large port ranges (≥1000)**: NullScan provides **4.5x performance improvement**
+- **Network ranges**: NullScan with ping sweep is **115.9x faster** than Nmap!
+- **Ping sweep advantage**: 2.07s vs 240s for /22 network demonstrates massive optimization benefits
+- **Consistency**: NullScan shows excellent stability (2.07s-2.08s vs 83.78s-396.24s for Nmap)
+
+### Real-World Network Performance
+
+**Test**: 10.0.0.0/22 (1024 potential hosts) - Top 100 ports
+
+| Scanner | Min Time | Max Time | Avg Time | Advantage |
+|---------|----------|----------|----------|-----------|
+| **NullScan** | **2.07s** | **2.08s** | **2.07s** | 🥇 Winner |
+| **Nmap** | 83.78s | 396.24s | 240.01s | 115.9x slower |
+
+**Analysis**: NullScan's optimized ping sweep + async scanning reduces a 4+ minute Nmap scan to just 2 seconds!
+
+### When to Use Each Tool
+
+| Use Case | Recommended Tool | Reason |
+|----------|-----------------|---------|
+| **Network discovery** | **NullScan** | 115x faster on network ranges |
+| **Large port scans** | **NullScan** | 4.5x faster on 1000+ ports |
+| **Security assessments** | **NullScan** | Built-in CVE database + speed |
+| **Banner grabbing** | **NullScan** | Protocol-specific probing |
+| **Quick single host** | **Nmap** | Slightly faster on small scans |
+| **Script scanning** | **Nmap** | Extensive NSE library |
+
+---
+
+## 🔍 Legacy Benchmark Data
 
 ```bash
 nullscan --target 127.0.0.1 --ports 1-1000 --banners

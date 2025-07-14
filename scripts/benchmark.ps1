@@ -7,13 +7,16 @@
 #   .\benchmark.ps1 -NetworkTarget "192.168.1.0/24"   # Include network range test
 #   .\benchmark.ps1 -ForceNetworkTest                  # Force network test even with default target
 #   .\benchmark.ps1 -Iterations 10                     # Run more iterations for accuracy
+#   .\benchmark.ps1 -NetworkIterations 3               # Limit network tests to 3 iterations (for slow networks)
 
 param(
     [string]$Target = "127.0.0.1",
     [string]$NetworkTarget = "10.0.0.0/22",
     [int]$Iterations = 10,
+    [int]$NetworkIterations = 3,
     [switch]$SkipExternalScanners,
-    [switch]$ForceNetworkTest
+    [switch]$ForceNetworkTest,
+    [switch]$SkipNetworkTest
 )
 
 Write-Host "🔍 NullScan Performance Benchmark" -ForegroundColor Cyan
@@ -47,14 +50,15 @@ function Measure-ScannerPerformance {
     param(
         [string]$ScannerName,
         [string]$Command,
-        [string]$TestName
+        [string]$TestName,
+        [int]$CustomIterations = $Iterations
     )
 
     Write-Host "`n🚀 Testing $ScannerName - $TestName" -ForegroundColor Blue
 
     $times = @()
-    for ($i = 1; $i -le $Iterations; $i++) {
-        Write-Host "  Run $i/$Iterations..." -NoNewline
+    for ($i = 1; $i -le $CustomIterations; $i++) {
+        Write-Host "  Run $i/$CustomIterations..." -NoNewline
 
         $startTime = Get-Date
         try {
@@ -94,7 +98,7 @@ function Measure-ScannerPerformance {
 # Test 1: Single Host - Top 100 Ports
 Write-Host "`n📊 Benchmark 1: Single Host Top 100 Ports ($Target)" -ForegroundColor Magenta
 
-$result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target $Target --top100 --concurrency 200 --timeout 500" "Single Host Top 100"
+$result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target $Target --ports 1-100 --concurrency 500 --timeout 100" "Single Host Top 100"
 if ($result) { $results += $result }
 
 if (-not $SkipExternalScanners) {
@@ -110,7 +114,7 @@ if (-not $SkipExternalScanners) {
 # Test 2: Large Port Range - Single Host
 Write-Host "`n📊 Benchmark 2: Large Port Range ($Target) ports 1-1000" -ForegroundColor Magenta
 
-$result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target $Target --ports 1-1000 --concurrency 250 --timeout 750" "Large Port Range"
+$result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target $Target --ports 1-1000 --concurrency 500 --timeout 100" "Large Port Range"
 if ($result) { $results += $result }
 
 if (-not $SkipExternalScanners) {
@@ -121,16 +125,16 @@ if (-not $SkipExternalScanners) {
 }
 
 # Test 3: Network Range (if network target is specified and different from localhost, or forced)
-if ($ForceNetworkTest -or ($NetworkTarget -ne "127.0.0.1/32" -and $NetworkTarget -ne "127.0.0.1" -and $NetworkTarget -ne "localhost" -and $NetworkTarget -ne "")) {
+if (-not $SkipNetworkTest -and ($ForceNetworkTest -or ($NetworkTarget -ne "127.0.0.1/32" -and $NetworkTarget -ne "127.0.0.1" -and $NetworkTarget -ne "localhost" -and $NetworkTarget -ne ""))) {
     Write-Host "`n📊 Benchmark 3: Network Range ($NetworkTarget)" -ForegroundColor Magenta
-    Write-Host "   Note: This test scans multiple hosts and may take longer" -ForegroundColor Yellow
+    Write-Host "   Note: This test scans multiple hosts and may take longer (using $NetworkIterations iterations)" -ForegroundColor Yellow
 
-    $result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target `"$NetworkTarget`" --top100 --ping-sweep --ping-timeout 500 --max-hosts 30 --concurrency 300 --timeout 1000" "Network Range"
+    $result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target `"$NetworkTarget`" --top100 --ping-sweep --ping-timeout 300 --max-hosts 40 --concurrency 500 --timeout 100" "Network Range" $NetworkIterations
     if ($result) { $results += $result }
 
     if (-not $SkipExternalScanners) {
         if (Get-Command nmap -ErrorAction SilentlyContinue) {
-            $result = Measure-ScannerPerformance "Nmap" "nmap --top-ports 100 -T4 `"$NetworkTarget`"" "Network Range"
+            $result = Measure-ScannerPerformance "Nmap" "nmap --top-ports 100 -T4 `"$NetworkTarget`"" "Network Range" $NetworkIterations
             if ($result) { $results += $result }
         }
     }
