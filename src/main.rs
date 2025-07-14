@@ -1,6 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use log::{info, warn};
+use num_cpus;
 use std::collections::HashMap;
 use std::net::IpAddr;
 use std::sync::Arc;
@@ -83,11 +84,42 @@ struct Args {
     /// Quiet mode - suppress progress bars and non-essential output
     #[arg(short, long)]
     quiet: bool,
+
+    /// Fast mode - auto-detect CPU cores and optimize for speed (disables banners, vuln checks, verbose)
+    #[arg(long)]
+    fast_mode: bool,
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let args = Args::parse();
+    let mut args = Args::parse();
+
+    // Apply fast mode optimizations
+    if args.fast_mode {
+        let logical_cores = num_cpus::get();
+
+        // EXTREME SPEED OPTIMIZATIONS
+        // Maximize concurrency based on cores (cores * 150 for better saturation)
+        args.concurrency = logical_cores * 150;
+
+        // Ultra-aggressive timeout (50ms - faster than Nmap T5)
+        args.timeout = 50;
+
+        // Disable ALL slow features
+        args.banners = false;
+        args.vuln_check = false;
+        args.verbose = false;
+        args.quiet = true; // Enable quiet mode for maximum speed
+
+        // Skip ping sweep in fast mode for single hosts (it's overhead)
+        // Network scans can still use it if explicitly requested
+
+        // Log fast mode activation (before quiet mode suppresses logs)
+        eprintln!(
+            "⚡ FAST MODE: {} cores → concurrency={}, timeout={}ms (LUDICROUS SPEED)",
+            logical_cores, args.concurrency, args.timeout
+        );
+    }
 
     // Initialize logger
     if args.quiet {
@@ -129,8 +161,12 @@ async fn main() -> Result<()> {
         None
     };
 
-    // Parse targets
-    let targets = parse_targets(&args.target).await?;
+    // Parse targets (skip DNS in fast mode for performance)
+    let targets = if args.fast_mode {
+        parse_targets_fast(&args.target)?
+    } else {
+        parse_targets(&args.target).await?
+    };
     info!("Parsed {} target(s) from: {}", targets.len(), args.target);
 
     // Determine ports to scan
@@ -154,12 +190,13 @@ async fn main() -> Result<()> {
         args.max_hosts
     );
 
-    // Perform ping sweep if requested
-    let final_targets = if args.ping_sweep {
+    // Perform ping sweep if requested (but skip for single hosts in fast mode)
+    let final_targets = if args.ping_sweep && !(args.fast_mode && targets.len() == 1) {
         if !args.quiet {
             info!("🏓 Ping sweep enabled, checking host availability...");
         }
-        let alive_hosts = scanner::ping_sweep(&targets, args.ping_timeout, args.concurrency, args.quiet).await;
+        let alive_hosts =
+            scanner::ping_sweep(&targets, args.ping_timeout, args.concurrency, args.quiet).await;
 
         if alive_hosts.is_empty() {
             if !args.quiet {
@@ -213,6 +250,7 @@ async fn main() -> Result<()> {
                 timeout_ms: timeout,
                 grab_banners,
                 quiet: args.quiet,
+                fast_mode: args.fast_mode,
             };
 
             // Perform scan
@@ -288,6 +326,80 @@ fn parse_port_specification(spec: &str) -> Result<Vec<u16>> {
     }
 
     Ok(ports)
+}
+
+/// Fast target parsing - IP addresses only, no DNS resolution
+fn parse_targets_fast(target_spec: &str) -> Result<Vec<IpAddr>> {
+    let mut targets = Vec::new();
+
+    // Check if it's multiple targets separated by commas
+    if target_spec.contains(',') {
+        for target in target_spec.split(',') {
+            let target = target.trim();
+
+            // Handle each target type individually
+            if target.contains('/') {
+                // CIDR notation
+                let network: ipnet::IpNet = target
+                    .parse()
+                    .map_err(|_| anyhow::anyhow!("Invalid CIDR notation: {}", target))?;
+
+                for (count, ip) in network.hosts().enumerate() {
+                    if count >= 1024 {
+                        break; // No warnings in fast mode
+                    }
+                    targets.push(ip);
+                }
+            } else {
+                // Only accept IP addresses in fast mode
+                match target.parse::<IpAddr>() {
+                    Ok(ip) => targets.push(ip),
+                    Err(_) => {
+                        return Err(anyhow::anyhow!(
+                            "Fast mode: Only IP addresses supported, got: {}",
+                            target
+                        ));
+                    }
+                }
+            }
+        }
+        return Ok(targets);
+    }
+
+    // Check if it's CIDR notation
+    if target_spec.contains('/') {
+        let network: ipnet::IpNet = target_spec
+            .parse()
+            .map_err(|_| anyhow::anyhow!("Invalid CIDR notation: {}", target_spec))?;
+
+        // Collect all IPs in the network (limit to reasonable size)
+        for (count, ip) in network.hosts().enumerate() {
+            if count >= 1024 {
+                break; // No warnings in fast mode
+            }
+            targets.push(ip);
+        }
+
+        if targets.is_empty() {
+            return Err(anyhow::anyhow!(
+                "No hosts found in network: {}",
+                target_spec
+            ));
+        }
+    } else {
+        // Only accept IP addresses in fast mode
+        match target_spec.parse::<IpAddr>() {
+            Ok(ip) => targets.push(ip),
+            Err(_) => {
+                return Err(anyhow::anyhow!(
+                    "Fast mode: Only IP addresses supported, got: {}",
+                    target_spec
+                ));
+            }
+        }
+    }
+
+    Ok(targets)
 }
 
 /// Parse target specification and return list of IP addresses

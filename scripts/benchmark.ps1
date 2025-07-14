@@ -98,7 +98,7 @@ function Measure-ScannerPerformance {
 # Test 1: Single Host - Top 100 Ports
 Write-Host "`n📊 Benchmark 1: Single Host Top 100 Ports ($Target)" -ForegroundColor Magenta
 
-$result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target $Target --ports 1-100 --concurrency 500 --timeout 100" "Single Host Top 100"
+$result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target $Target --ports 1-100 --fast-mode" "Single Host Top 100"
 if ($result) { $results += $result }
 
 if (-not $SkipExternalScanners) {
@@ -114,7 +114,7 @@ if (-not $SkipExternalScanners) {
 # Test 2: Large Port Range - Single Host
 Write-Host "`n📊 Benchmark 2: Large Port Range ($Target) ports 1-1000" -ForegroundColor Magenta
 
-$result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target $Target --ports 1-1000 --concurrency 500 --timeout 100" "Large Port Range"
+$result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target $Target --ports 1-1000 --fast-mode" "Large Port Range"
 if ($result) { $results += $result }
 
 if (-not $SkipExternalScanners) {
@@ -129,7 +129,7 @@ if (-not $SkipNetworkTest -and ($ForceNetworkTest -or ($NetworkTarget -ne "127.0
     Write-Host "`n📊 Benchmark 3: Network Range ($NetworkTarget)" -ForegroundColor Magenta
     Write-Host "   Note: This test scans multiple hosts and may take longer (using $NetworkIterations iterations)" -ForegroundColor Yellow
 
-    $result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target `"$NetworkTarget`" --top100 --ping-sweep --ping-timeout 300 --max-hosts 40 --concurrency 500 --timeout 100" "Network Range" $NetworkIterations
+    $result = Measure-ScannerPerformance "NullScan" "$nullscanPath --target `"$NetworkTarget`" --top100 --ping-sweep --fast-mode --max-hosts 40" "Network Range" $NetworkIterations
     if ($result) { $results += $result }
 
     if (-not $SkipExternalScanners) {

@@ -81,7 +81,12 @@ pub async fn ping_host(target: IpAddr, timeout_ms: u64) -> bool {
 }
 
 /// Perform ping sweep on multiple hosts
-pub async fn ping_sweep(targets: &[IpAddr], timeout_ms: u64, concurrency: usize, quiet: bool) -> Vec<IpAddr> {
+pub async fn ping_sweep(
+    targets: &[IpAddr],
+    timeout_ms: u64,
+    concurrency: usize,
+    quiet: bool,
+) -> Vec<IpAddr> {
     if !quiet {
         info!("🏓 Starting ping sweep for {} hosts", targets.len());
     }
@@ -150,6 +155,7 @@ pub struct ScanConfig {
     pub timeout_ms: u64,
     pub grab_banners: bool,
     pub quiet: bool,
+    pub fast_mode: bool, // New field for ultra optimizations
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -206,15 +212,17 @@ impl Scanner {
         vuln_checker: Option<&crate::vuln::VulnChecker>,
     ) -> Result<Vec<ScanResult>> {
         let total_ports = self.config.ports.len();
-        if !self.config.quiet {
+
+        // In fast mode, skip ALL logging and progress tracking
+        if !self.config.fast_mode && !self.config.quiet {
             info!(
                 "🔍 Scanning {} ports on {}",
                 total_ports, self.config.target
             );
         }
 
-        // Create progress bar (hidden in quiet mode)
-        let pb = if self.config.quiet {
+        // Create progress bar (hidden in fast mode OR quiet mode)
+        let pb = if self.config.fast_mode || self.config.quiet {
             ProgressBar::hidden()
         } else {
             let pb = ProgressBar::new(total_ports as u64);
@@ -226,6 +234,12 @@ impl Scanner {
             pb
         };
 
+        // FAST MODE: Use batched scanning for better efficiency
+        if self.config.fast_mode {
+            return self.scan_fast_batch().await;
+        }
+
+        // Regular scanning logic for non-fast mode
         // Create semaphore for concurrency control
         let semaphore = Arc::new(tokio::sync::Semaphore::new(self.config.concurrency));
 
@@ -284,6 +298,93 @@ impl Scanner {
 
         Ok(scan_results)
     }
+
+    /// Ultra-fast batch scanning for fast mode - minimal overhead
+    async fn scan_fast_batch(&self) -> Result<Vec<ScanResult>> {
+        let batch_size = 200; // Batch connections for better efficiency
+        let semaphore = Arc::new(tokio::sync::Semaphore::new(self.config.concurrency));
+
+        let mut all_results = Vec::with_capacity(self.config.ports.len());
+
+        // Process ports in batches
+        for chunk in self.config.ports.chunks(batch_size) {
+            let tasks: Vec<_> = chunk
+                .iter()
+                .map(|&port| {
+                    let semaphore = semaphore.clone();
+                    let target = self.config.target;
+                    let timeout_ms = self.config.timeout_ms;
+
+                    tokio::spawn(async move {
+                        let _permit = semaphore.acquire().await.unwrap();
+                        scan_port_ultra_fast(target, port, timeout_ms).await
+                    })
+                })
+                .collect();
+
+            // Wait for batch to complete
+            let batch_results = join_all(tasks).await;
+
+            // Collect batch results
+            for result in batch_results {
+                if let Ok(scan_result) = result {
+                    all_results.push(scan_result);
+                }
+            }
+        }
+
+        // Sort by port number (fast sort)
+        all_results.sort_unstable_by_key(|r| r.port);
+
+        Ok(all_results)
+    }
+}
+
+/// Ultra-fast port scanning - stripped of all non-essential operations
+async fn scan_port_ultra_fast(target: IpAddr, port: u16, timeout_ms: u64) -> ScanResult {
+    let start_time = Instant::now();
+    let socket_addr = SocketAddr::new(target, port);
+    let timeout_duration = Duration::from_millis(timeout_ms);
+
+    // Fast TCP connect attempt - no banner grabbing, minimal service detection
+    let is_open = match timeout(timeout_duration, TcpStream::connect(socket_addr)).await {
+        Ok(Ok(_)) => true,
+        _ => false,
+    };
+
+    let response_time = start_time.elapsed();
+
+    ScanResult {
+        target,
+        port,
+        is_open,
+        service: if is_open {
+            get_service_name_fast(port)
+        } else {
+            None
+        },
+        banner: None, // Never grab banners in ultra-fast mode
+        response_time,
+        vulnerabilities: Vec::new(), // Never check vulns in ultra-fast mode
+    }
+}
+
+/// Ultra-fast service name lookup - minimal mapping for speed
+fn get_service_name_fast(port: u16) -> Option<String> {
+    // Only the most essential ports to minimize lookup time
+    let service = match port {
+        22 => "SSH",
+        80 => "HTTP",
+        443 => "HTTPS",
+        21 => "FTP",
+        25 => "SMTP",
+        53 => "DNS",
+        135 => "RPC",
+        445 => "SMB",
+        3389 => "RDP",
+        _ => return None,
+    };
+    Some(service.to_string())
 }
 
 async fn scan_port(
