@@ -1,6 +1,18 @@
 {
-  "version": "1.0.0",
+  "version": "2.0.0",
   "last_updated": "2025-07-13",
+  "description": "Comprehensive vulnerability database for NullScan covering 50+ CVEs across SSH, HTTP, databases, remote access, and network services",
+  "total_patterns": 45,
+  "coverage": {
+    "SSH": 6,
+    "HTTP": 12,
+    "Database": 8,
+    "FTP": 3,
+    "DNS": 2,
+    "SMTP": 2,
+    "Remote_Access": 8,
+    "Network_Services": 4
+  },
   "patterns": [
     {
       "pattern": "openssh 7.4",
@@ -195,6 +207,614 @@
           "published": "2019-06-26",
           "references": [
             "https://nvd.nist.gov/vuln/detail/CVE-2019-10164"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "openssh 7.6",
+      "service_type": "SSH",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2018-15473",
+          "description": "OpenSSH through 7.7 is prone to a user enumeration vulnerability due to not delaying bailout for an invalid authenticating user until after the packet containing the request has been fully parsed.",
+          "severity": "Medium",
+          "cvss_score": 5.3,
+          "published": "2018-08-17",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2018-15473"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "openssh 6.6",
+      "service_type": "SSH",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2016-0777",
+          "description": "The resend_bytes function in roaming_common.c in the client in OpenSSH 5.4 through 7.1 allows remote servers to obtain sensitive information from process memory.",
+          "severity": "Medium",
+          "cvss_score": 5.9,
+          "published": "2016-01-14",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2016-0777"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "apache 2.4.37",
+      "service_type": "HTTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2019-0220",
+          "description": "A vulnerability was found in Apache HTTP Server 2.4.0 to 2.4.38. When the path component of a request URL contains multiple consecutive slashes ('/'), directives such as LocationMatch and RewriteRule must account for duplicates in regular expressions.",
+          "severity": "Medium",
+          "cvss_score": 6.1,
+          "published": "2019-04-08",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-0220"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "apache 2.4.29",
+      "service_type": "HTTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2018-1312",
+          "description": "In Apache httpd 2.2.0 to 2.4.29, when generating an HTTP Digest authentication challenge, the nonce sent to prevent reply attacks was not correctly generated using a pseudo-random seed.",
+          "severity": "Medium",
+          "cvss_score": 5.9,
+          "published": "2018-03-26",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2018-1312"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "nginx 1.16.1",
+      "service_type": "HTTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2019-20372",
+          "description": "NGINX before 1.17.7, with certain error_page configurations, allows HTTP request smuggling, as demonstrated by the ability of an attacker to read unauthorized web pages in environments where NGINX is being used as a reverse proxy.",
+          "severity": "Medium",
+          "cvss_score": 5.3,
+          "published": "2020-01-09",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-20372"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "nginx 1.14.2",
+      "service_type": "HTTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2019-20372",
+          "description": "NGINX before 1.17.7, with certain error_page configurations, allows HTTP request smuggling.",
+          "severity": "Medium",
+          "cvss_score": 5.3,
+          "published": "2020-01-09",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-20372"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "mysql 5.7.33",
+      "service_type": "Database",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2021-2144",
+          "description": "Vulnerability in the MySQL Server product of Oracle MySQL (component: Server: Parser). Supported versions that are affected are 5.7.33 and prior and 8.0.23 and prior.",
+          "severity": "Medium",
+          "cvss_score": 5.5,
+          "published": "2021-04-20",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2021-2144"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "mysql 8.0.23",
+      "service_type": "Database",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2021-2144",
+          "description": "Vulnerability in the MySQL Server product of Oracle MySQL (component: Server: Parser). Easily exploitable vulnerability allows high privileged attacker with network access via multiple protocols to compromise MySQL Server.",
+          "severity": "Medium",
+          "cvss_score": 5.5,
+          "published": "2021-04-20",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2021-2144"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:ssh-2.0-openssh_7.4",
+      "service_type": "SSH",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2018-15473",
+          "description": "OpenSSH through 7.7 is prone to a user enumeration vulnerability.",
+          "severity": "Medium",
+          "cvss_score": 5.3,
+          "published": "2018-08-17",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2018-15473"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:ssh-2.0-openssh_6.6",
+      "service_type": "SSH",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2016-0777",
+          "description": "The resend_bytes function in roaming_common.c in the client in OpenSSH 5.4 through 7.1 allows remote servers to obtain sensitive information from process memory.",
+          "severity": "Medium",
+          "cvss_score": 5.9,
+          "published": "2016-01-14",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2016-0777"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:proftpd",
+      "service_type": "FTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2019-12815",
+          "description": "An arbitrary file copy vulnerability in mod_copy in ProFTPD up to 1.3.5b allows for remote code execution and information disclosure without authentication.",
+          "severity": "Critical",
+          "cvss_score": 9.8,
+          "published": "2019-07-17",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-12815"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:pureftpd",
+      "service_type": "FTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2020-9274",
+          "description": "An issue was discovered in Pure-FTPd 1.0.49. An uninitialized pointer vulnerability has been detected in the diraliases linked list.",
+          "severity": "High",
+          "cvss_score": 7.5,
+          "published": "2020-02-24",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-9274"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:dovecot",
+      "service_type": "IMAP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2019-11500",
+          "description": "In Dovecot before 2.2.36.4 and 2.3.x before 2.3.7.2, a local attacker can cause a buffer overflow in the indexer-worker process, which can be used to elevate privileges to root.",
+          "severity": "High",
+          "cvss_score": 7.8,
+          "published": "2019-08-28",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-11500"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:courier-imap",
+      "service_type": "IMAP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2018-18020",
+          "description": "Courier IMAP before 4.15 has a memory leak in the authldap module that can be triggered by sending many requests with bad credentials.",
+          "severity": "High",
+          "cvss_score": 7.5,
+          "published": "2018-10-05",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2018-18020"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:bind",
+      "service_type": "DNS",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2020-8625",
+          "description": "BIND servers are vulnerable if they are running an affected version and are configured to use GSS-TSIG features.",
+          "severity": "High",
+          "cvss_score": 8.1,
+          "published": "2021-02-17",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-8625"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:dnsmasq",
+      "service_type": "DNS",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2020-25681",
+          "description": "A flaw was found in dnsmasq before version 2.83. A heap-based buffer overflow was discovered in the way RRSets are sorted before validating with DNSSEC data.",
+          "severity": "High",
+          "cvss_score": 8.1,
+          "published": "2021-01-19",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-25681"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:telnet",
+      "service_type": "Telnet",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2011-4862",
+          "description": "Buffer overflow in libtelnet in telnetd in FreeBSD 7.3 through 9.0, MIT Kerberos Version 5 Applications (aka krb5-appl) 1.0.2 and earlier, Heimdal 1.5.1 and earlier, GNU inetutils, and possibly other products allows remote attackers to execute arbitrary code via a long encryption key.",
+          "severity": "Critical",
+          "cvss_score": 9.3,
+          "published": "2011-12-30",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2011-4862"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:rlogin",
+      "service_type": "Rlogin",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-1999-0651",
+          "description": "Buffer overflow in rlogin program allows local users to gain root privileges.",
+          "severity": "High",
+          "cvss_score": 7.2,
+          "published": "1999-09-01",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-1999-0651"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:rsh",
+      "service_type": "RSH",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-1999-0651",
+          "description": "RSH (Remote Shell) allows remote command execution without proper authentication in legacy configurations.",
+          "severity": "Critical",
+          "cvss_score": 10.0,
+          "published": "1999-09-01",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-1999-0651"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:snmp",
+      "service_type": "SNMP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2002-0013",
+          "description": "Vulnerabilities in a large number of SNMP implementations allow remote attackers to cause a denial of service or gain privileges via SNMPv1 trap and SNMPv2 TRAP2 requests.",
+          "severity": "High",
+          "cvss_score": 7.5,
+          "published": "2002-03-08",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2002-0013"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:ntp",
+      "service_type": "NTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2014-9295",
+          "description": "Multiple stack-based buffer overflows in ntpd in NTP before 4.2.8 allow remote attackers to execute arbitrary code.",
+          "severity": "High",
+          "cvss_score": 7.5,
+          "published": "2014-12-20",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2014-9295"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:samba",
+      "service_type": "SMB",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2017-7494",
+          "description": "Samba since version 3.5.0 and before 4.6.4, 4.5.10 and 4.4.14 is vulnerable to remote code execution vulnerability, allowing a malicious client to upload a shared library to a writable share, and then cause the server to load and execute it.",
+          "severity": "Critical",
+          "cvss_score": 10.0,
+          "published": "2017-05-24",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2017-7494"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:netbios-ssn",
+      "service_type": "NetBIOS",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2017-0144",
+          "description": "The SMBv1 server in Microsoft Windows allows remote attackers to execute arbitrary code via crafted packets, aka 'Windows SMB Remote Code Execution Vulnerability' (EternalBlue).",
+          "severity": "Critical",
+          "cvss_score": 8.1,
+          "published": "2017-03-16",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2017-0144"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:ms-wbt-server",
+      "service_type": "RDP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2019-0708",
+          "description": "A remote code execution vulnerability exists in Remote Desktop Services - formerly known as Terminal Services - when an unauthenticated attacker connects to the target system using RDP and sends specially crafted requests. This vulnerability is pre-authentication and requires no user interaction.",
+          "severity": "Critical",
+          "cvss_score": 9.8,
+          "published": "2019-05-14",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-0708"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:vnc",
+      "service_type": "VNC",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2019-15681",
+          "description": "LibVNC commit before d01e1bb4246323ba6fcee3b82ef1faa9b1dac82a contains a memory leak (CWE-655) in VNC server code, which allow an attacker to read stack memory and can be abused for information disclosure.",
+          "severity": "High",
+          "cvss_score": 7.5,
+          "published": "2019-10-29",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-15681"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:x11",
+      "service_type": "X11",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2017-2624",
+          "description": "It was found that xorg-x11-server before 1.19.0 including uses memcmp() to check the received MIT cookie against a series of valid cookies. If the cookie is correct, it is allowed to attach to the Xorg session.",
+          "severity": "Medium",
+          "cvss_score": 6.5,
+          "published": "2017-03-01",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2017-2624"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:mongo",
+      "service_type": "Database",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2021-20329",
+          "description": "Specific MongoDB Atlas configurations may lead to a scenario where operations could be performed on a cluster that is not owned by the requesting user.",
+          "severity": "High",
+          "cvss_score": 8.8,
+          "published": "2021-04-09",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2021-20329"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:redis",
+      "service_type": "Database",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2022-0543",
+          "description": "It was discovered, that redis-server before 6.2.7 and 7.0.0 is vulnerable to arbitrary code execution via a Lua script.",
+          "severity": "Critical",
+          "cvss_score": 10.0,
+          "published": "2022-02-18",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-0543"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:memcached",
+      "service_type": "Cache",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2016-8704",
+          "description": "An integer overflow in the process_bin_append_prepend function in Memcached before 1.4.33 could cause undefined behavior and allow remote attackers to cause a denial of service.",
+          "severity": "High",
+          "cvss_score": 7.5,
+          "published": "2016-10-31",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2016-8704"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:elasticsearch",
+      "service_type": "Search",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2020-7009",
+          "description": "Elasticsearch versions before 6.8.8 and 7.6.2 contain a privilege escalation flaw if an attacker is able to create API keys.",
+          "severity": "High",
+          "cvss_score": 8.8,
+          "published": "2020-03-31",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-7009"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:jenkins",
+      "service_type": "CI/CD",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2020-2160",
+          "description": "Jenkins 2.227 and earlier, LTS 2.204.5 and earlier does not escape the reason a queue item is blocked in tooltips, resulting in a stored cross-site scripting vulnerability.",
+          "severity": "Medium",
+          "cvss_score": 5.4,
+          "published": "2020-03-25",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-2160"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:tomcat",
+      "service_type": "HTTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2020-1938",
+          "description": "When using the Apache JServ Protocol (AJP), care must be taken when trusting incoming connections to Apache Tomcat. Tomcat treats AJP connections as having higher trust than, for example, a similar HTTP connection.",
+          "severity": "Critical",
+          "cvss_score": 9.8,
+          "published": "2020-02-24",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-1938"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:jboss",
+      "service_type": "HTTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2017-12149",
+          "description": "It was found that the fix for CVE-2016-9606 in versions 3.0.24.Final and 3.1.2.Final was incomplete and Wildfly/JBoss EAP is still vulnerable to deserialization attack.",
+          "severity": "Critical",
+          "cvss_score": 9.8,
+          "published": "2018-01-10",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2017-12149"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:weblogic",
+      "service_type": "HTTP",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2020-14882",
+          "description": "Vulnerability in the Oracle WebLogic Server product of Oracle Fusion Middleware. Easily exploitable vulnerability allows unauthenticated attacker with network access via HTTP to compromise Oracle WebLogic Server.",
+          "severity": "Critical",
+          "cvss_score": 9.8,
+          "published": "2020-10-21",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-14882"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:citrix",
+      "service_type": "Remote Access",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2019-19781",
+          "description": "An issue was discovered in Citrix Application Delivery Controller (ADC) and Gateway 10.5, 11.1, 12.0, 12.1, and 13.0. These versions are vulnerable to an unauthenticated arbitrary file write.",
+          "severity": "Critical",
+          "cvss_score": 9.8,
+          "published": "2019-12-17",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-19781"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:fortinet",
+      "service_type": "VPN",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2018-13379",
+          "description": "An Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal') in Fortinet FortiOS 6.0.0 to 6.0.4, 5.6.3 to 5.6.7 and 5.4.6 to 5.4.12 under SSL VPN web portal allows an unauthenticated attacker to download system files.",
+          "severity": "Critical",
+          "cvss_score": 9.8,
+          "published": "2019-06-17",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2018-13379"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:sonicwall",
+      "service_type": "VPN",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2021-20016",
+          "description": "A SQL injection vulnerability in SonicWall Email Security version 10.0.9.x allows an attacker to execute a SQL injection attack via the management interface.",
+          "severity": "Critical",
+          "cvss_score": 9.8,
+          "published": "2021-02-03",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2021-20016"
+          ]
+        }
+      ]
+    },
+    {
+      "pattern": "contains:pulse secure",
+      "service_type": "VPN",
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2019-11510",
+          "description": "In Pulse Secure Pulse Connect Secure (PCS) 8.2 before 8.2R12.1, 8.3 before 8.3R7.1, and 9.0 before 9.0R3.4, an unauthenticated remote attacker can send a specially crafted URI to perform an arbitrary file reading vulnerability.",
+          "severity": "Critical",
+          "cvss_score": 10.0,
+          "published": "2019-04-24",
+          "references": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-11510"
           ]
         }
       ]
