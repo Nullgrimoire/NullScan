@@ -197,6 +197,6 @@ For answers to common questions about this code of conduct, see the FAQ at [http
 ---
 
 **Last Updated**: July 14, 2025
-**Version**: 1.5.0
+**Version**: 1.6.0
 
 For questions about this Code of Conduct, please contact the project maintainers at [security@nullgrimoire.com](mailto:security@nullgrimoire.com).

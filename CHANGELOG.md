@@ -1,4 +1,22 @@
-# Changelog
+# 📋 Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.6.0] - 2025-07-14
+
+### Added
+- Version bump to 1.6.0
+- Updated all version references across the codebase
+- Enhanced project documentation
+
+### Changed
+- Updated version strings in all modules
+- Refreshed sample outputs and documentation
+
+## [1.5.0] - 2025-07-14log
 
 All notable changes to NullScan will be documented in this file.
 

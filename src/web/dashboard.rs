@@ -439,7 +439,7 @@ pub async fn dashboard_index(State(state): State<Arc<AppState>>) -> Html<String>
         </div>
 
         <div class="footer">
-            <p>NullScan v1.5.0 - Professional Red Team Network Scanner</p>
+            <p>NullScan v1.6.0 - Professional Red Team Network Scanner</p>
             <p>Built with ❤️ in Rust for speed, safety, and reliability</p>
         </div>
     </div>
