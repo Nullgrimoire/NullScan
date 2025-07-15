@@ -67,7 +67,6 @@ pub struct VulnChecker {
 }
 
 impl VulnChecker {
-    /// Load vulnerability database from JSON file
     pub fn load_from_file(path: &str) -> Result<Self> {
         info!("Loading vulnerability database from: {path}");
 
@@ -92,7 +91,6 @@ impl VulnChecker {
         })
     }
 
-    /// Check if a service banner matches known vulnerabilities
     pub fn check_banner(&self, banner: &str) -> Vec<Vulnerability> {
         let mut vulnerabilities = Vec::new();
 
@@ -132,7 +130,6 @@ impl VulnChecker {
         vulnerabilities
     }
 
-    /// Check if banner matches a vulnerability pattern
     fn matches_pattern(&self, banner: &str, pattern: &str) -> bool {
         // Support different pattern types
         if let Some(regex_pattern) = pattern.strip_prefix("regex:") {
@@ -154,7 +151,6 @@ impl VulnChecker {
         false
     }
 
-    /// Match service versions with vulnerability ranges
     fn matches_version(&self, banner: &str, version_pattern: &str) -> bool {
         // Extract version from banner (basic implementation)
         // This could be enhanced with more sophisticated version parsing
@@ -174,7 +170,6 @@ impl VulnChecker {
         false
     }
 
-    /// Get database statistics
     pub fn get_stats(&self) -> VulnDbStats {
         let total_patterns = self.database.patterns.len();
         let total_vulns = self
@@ -213,7 +208,6 @@ pub struct VulnDbStats {
     pub last_updated: String,
 }
 
-/// Create a sample vulnerability database
 #[allow(dead_code)]
 pub fn create_sample_database() -> VulnDatabase {
     VulnDatabase {

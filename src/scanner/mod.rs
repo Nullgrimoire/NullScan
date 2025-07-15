@@ -10,7 +10,6 @@ use tokio::time::timeout;
 
 use crate::banner::BannerGrabber;
 
-/// Ping a host to check if it's reachable
 pub async fn ping_host(target: IpAddr, timeout_ms: u64) -> bool {
     debug!("Pinging {target}");
 
@@ -80,7 +79,6 @@ pub async fn ping_host(target: IpAddr, timeout_ms: u64) -> bool {
     false
 }
 
-/// Perform ping sweep on multiple hosts
 pub async fn ping_sweep(
     targets: &[IpAddr],
     timeout_ms: u64,
@@ -299,7 +297,6 @@ impl Scanner {
         Ok(scan_results)
     }
 
-    /// Ultra-fast batch scanning for fast mode - minimal overhead
     async fn scan_fast_batch(&self) -> Result<Vec<ScanResult>> {
         let batch_size = 200; // Batch connections for better efficiency
         let semaphore = Arc::new(tokio::sync::Semaphore::new(self.config.concurrency));
@@ -340,7 +337,6 @@ impl Scanner {
     }
 }
 
-/// Ultra-fast port scanning - stripped of all non-essential operations
 async fn scan_port_ultra_fast(target: IpAddr, port: u16, timeout_ms: u64) -> ScanResult {
     let start_time = Instant::now();
     let socket_addr = SocketAddr::new(target, port);
@@ -369,7 +365,6 @@ async fn scan_port_ultra_fast(target: IpAddr, port: u16, timeout_ms: u64) -> Sca
     }
 }
 
-/// Ultra-fast service name lookup - minimal mapping for speed
 fn get_service_name_fast(port: u16) -> Option<String> {
     // Only the most essential ports to minimize lookup time
     let service = match port {

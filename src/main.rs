@@ -328,7 +328,6 @@ fn parse_port_specification(spec: &str) -> Result<Vec<u16>> {
     Ok(ports)
 }
 
-/// Fast target parsing - IP addresses only, no DNS resolution
 fn parse_targets_fast(target_spec: &str) -> Result<Vec<IpAddr>> {
     let mut targets = Vec::new();
 
@@ -402,7 +401,6 @@ fn parse_targets_fast(target_spec: &str) -> Result<Vec<IpAddr>> {
     Ok(targets)
 }
 
-/// Parse target specification and return list of IP addresses
 async fn parse_targets(target_spec: &str) -> Result<Vec<IpAddr>> {
     let mut targets = Vec::new();
 
