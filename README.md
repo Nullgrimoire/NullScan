@@ -13,6 +13,7 @@
 - [📚 Documentation](#-documentation)
 - [🛡️ Vulnerability Assessment](#️-vulnerability-assessment)
 - [🔍 Service Detection & Protocol Probing](#-service-detection--protocol-probing)
+- [🌐 Web Dashboard](#-web-dashboard)
 - [🚀 Installation](#-installation)
 - [🚀 Quick Start](#-quick-start)
 - [📋 Command Line Options](#-command-line-options)
@@ -128,6 +129,75 @@ nullscan --target 192.168.1.100 --ports 22,80,443,3306 --banners
 # Port 443 | HTTPS   | TLS/SSL - TLS handshake successful (version: 3.3)
 # Port 3306| MySQL   | MySQL - MySQL 8.0.33-0ubuntu0.22.04.2
 ```
+
+## 🌐 Web Dashboard
+
+**Revolutionary Red Team Interface** - NullScan now includes a cutting-edge web dashboard designed specifically for red team workflows and collaborative penetration testing.
+
+### Dashboard Features
+
+- **🎯 Real-time Scan Management** - Start, monitor, and control scans from a sleek web interface
+- **📊 Interactive Results Visualization** - View scan results in real-time with detailed host and port information
+- **🔥 Red Team Optimized UI** - Dark theme with cybersecurity-focused design and intuitive workflow
+- **🚀 RESTful API** - Full API access for automation and integration with other tools
+- **⚡ Live Progress Tracking** - Monitor scan progress with real-time updates and estimated completion times
+- **📱 Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
+- **🎨 Professional Reports** - Generate and export professional-grade reports in multiple formats
+- **🔗 Clickable Navigation** - Click on any scan in the dashboard to view detailed results
+- **📋 Multiple Export Formats** - Export scan results in JSON, CSV, or HTML directly from the web interface
+- **🛡️ Vulnerability Highlights** - Automatically highlight discovered vulnerabilities with severity indicators
+
+### Quick Start
+
+```bash
+# Start the web dashboard on port 8080
+nullscan --web-dashboard 8080
+
+# Custom bind address and port
+nullscan --web-dashboard 3000 --web-bind 0.0.0.0
+```
+
+**Access the dashboard at:** `http://localhost:8080/dashboard`
+
+> 📖 **For complete web dashboard usage guide, API documentation, and advanced features, see [docs/web-dashboard-guide.md](docs/web-dashboard-guide.md)**
+
+### API Endpoints
+
+- `GET /api/health` - Health check
+- `POST /api/scan` - Start a new scan
+- `GET /api/scans` - List all scans
+- `GET /api/scan/{id}` - Get scan details
+- `GET /api/scan/{id}/results` - Get scan results
+- `POST /api/scan/{id}/stop` - Stop a running scan
+- `GET /api/scan/{id}/export` - Export scan results
+
+### Example API Usage
+
+```bash
+# Start a scan via API
+curl -X POST http://localhost:8080/api/scan \
+  -H "Content-Type: application/json" \
+  -d '{
+    "target": "192.168.1.0/24",
+    "top100": true,
+    "banners": true,
+    "vuln_check": true,
+    "name": "Network Discovery"
+  }'
+
+# Get all scans
+curl http://localhost:8080/api/scans
+
+# Get specific scan results
+curl http://localhost:8080/api/scan/{scan-id}/results
+```
+
+### Perfect for Red Teams
+
+- **Collaborative Scanning** - Multiple team members can access and monitor scans
+- **Campaign Management** - Organize and track multiple scanning campaigns
+- **Real-time Coordination** - Share results instantly with team members
+- **Professional Reporting** - Generate client-ready reports with detailed findings
 
 ## 🚀 Installation
 
@@ -288,6 +358,8 @@ Options:
   -v, --verbose                    Verbose output
   -q, --quiet                      Quiet mode - suppress progress bars and non-essential output
       --fast-mode                  Fast mode - auto-detect CPU cores and optimize for speed (disables banners, vuln checks, verbose)
+      --web-dashboard <PORT>       Start web dashboard on specified port
+      --web-bind <ADDRESS>         Web dashboard bind address [default: 127.0.0.1]
   -h, --help                       Print help
   -V, --version                    Print version
 ```

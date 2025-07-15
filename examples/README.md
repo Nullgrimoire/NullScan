@@ -49,6 +49,52 @@ Professional resources for YouTube videos, technical blogs, and demonstrations:
   examples\demo.bat
   ```
 
+## 🎯 NEW: Web Dashboard Integration
+
+NullScan now features a professional web dashboard for real-time scan management:
+
+### Quick Start
+```bash
+# Start the web dashboard
+nullscan --web-dashboard 8080
+
+# Access in browser at: http://localhost:8080/dashboard
+```
+
+### Dashboard Features
+- **Real-time Scan Management**: Start, monitor, and stop scans
+- **Professional Red Team Interface**: Dark theme optimized for security professionals
+- **Interactive Results Tables**: Click on any scan to view detailed results
+- **Export Functionality**: Download results in JSON or CSV format
+- **Multiple Concurrent Scans**: Run multiple scans simultaneously
+- **Vulnerability Highlights**: Automatically highlight discovered vulnerabilities
+- **Team Collaboration**: Share scan results across team members
+
+### API Integration
+The web dashboard includes a full RESTful API for automation:
+
+```bash
+# Start a scan via API
+curl -X POST http://localhost:8080/api/scan \
+  -H "Content-Type: application/json" \
+  -d '{
+    "target": "192.168.1.0/24",
+    "top100": true,
+    "banners": true,
+    "vuln_check": true,
+    "name": "Network Discovery"
+  }'
+
+# Get scan results
+curl http://localhost:8080/api/scan/{scan-id}/results
+```
+
+### Perfect for Content Creators
+- Visual interface for video demonstrations
+- Professional appearance suitable for client presentations
+- Real-time progress tracking for dynamic content
+- Export capabilities for analysis segments
+
 ### Linux & macOS
 
 #### Bash (`demo.sh`)

@@ -13,6 +13,7 @@ mod export;
 mod presets;
 mod scanner;
 mod vuln;
+mod web;
 
 use export::ExportFormat;
 use presets::PortPreset;
@@ -27,7 +28,7 @@ use scanner::{ScanConfig, ScanResult, Scanner};
 struct Args {
     /// Target IP address, hostname, or CIDR notation (e.g., 192.168.1.0/24)
     #[arg(short, long)]
-    target: String,
+    target: Option<String>,
 
     /// Port range (e.g., 1-1000, 80,443,8080)
     #[arg(short, long)]
@@ -88,11 +89,26 @@ struct Args {
     /// Fast mode - auto-detect CPU cores and optimize for speed (disables banners, vuln checks, verbose)
     #[arg(long)]
     fast_mode: bool,
+
+    /// Start web dashboard on specified port
+    #[arg(long)]
+    web_dashboard: Option<u16>,
+
+    /// Web dashboard bind address
+    #[arg(long, default_value = "127.0.0.1")]
+    web_bind: String,
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let mut args = Args::parse();
+
+    // Check if web dashboard is requested
+    if let Some(port) = args.web_dashboard {
+        println!("🌐 Starting NullScan Web Dashboard...");
+        let web_server = web::WebServer::new();
+        return web_server.start(args.web_bind, port).await;
+    }
 
     // Apply fast mode optimizations
     if args.fast_mode {
@@ -161,13 +177,19 @@ async fn main() -> Result<()> {
         None
     };
 
+    // Check that target is provided for CLI mode
+    let target = args
+        .target
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("Target is required for CLI mode"))?;
+
     // Parse targets (skip DNS in fast mode for performance)
     let targets = if args.fast_mode {
-        parse_targets_fast(&args.target)?
+        parse_targets_fast(target)?
     } else {
-        parse_targets(&args.target).await?
+        parse_targets(target).await?
     };
-    info!("Parsed {} target(s) from: {}", targets.len(), args.target);
+    info!("Parsed {} target(s) from: {}", targets.len(), target);
 
     // Determine ports to scan
     let ports = if args.top100 {
@@ -292,7 +314,7 @@ async fn main() -> Result<()> {
             combined_results.extend(results.iter().cloned());
         }
 
-        let report = generate_network_scan_report(&all_results, &args.target, scan_duration);
+        let report = generate_network_scan_report(&all_results, target, scan_duration);
         export::export_results(&combined_results, &report, args.format, args.output).await?;
     }
 
