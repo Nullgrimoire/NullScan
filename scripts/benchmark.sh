@@ -1,53 +1,138 @@
 #!/bin/bash
 
-# NullScan Professional Benchmark Suite
-# Comprehensive performance testing and comparison tool
-# Author: Nullgrimoire
-# Version: 2.0
-
-set -e
+# NullScan Simple Benchmark Script
+# Quick performance testing for NullScan
+# Usage: ./benchmark.sh [target] [iterations]
 
 # Configuration
 TARGET="${1:-127.0.0.1}"
-NETWORK_TARGET="${2:-192.168.1.0/24}"
-ITERATIONS="${3:-5}"
-NETWORK_ITERATIONS="${4:-3}"
-SKIP_NMAP="${5:-false}"
-SKIP_NETWORK="${6:-false}"
-ONLY_NULLSCAN="${7:-false}"
-OUTPUT_FILE="${8:-}"
-GENERATE_REPORT="${9:-false}"
+ITERATIONS="${2:-3}"
 
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-MAGENTA='\033[0;35m'
 CYAN='\033[0;36m'
-WHITE='\033[1;37m'
 NC='\033[0m' # No Color
 
-# Results storage
-RESULTS_FILE="benchmark_results_$(date +%Y%m%d_%H%M%S).csv"
-declare -a RESULTS
+echo -e "${YELLOW}Building NullScan...${NC}"
+cargo build --release
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Build failed!${NC}"
+    exit 1
+fi
 
-# Utility functions
-print_banner() {
-    echo -e "\n${CYAN}============================================================${NC}"
-    echo -e "${CYAN}  $1${NC}"
-    echo -e "${CYAN}============================================================${NC}"
-}
+NULLSCAN="./target/release/nullscan"
 
-print_section() {
-    echo -e "\n${YELLOW}>>> $1${NC}"
-}
+echo -e "${YELLOW}Verifying NullScan...${NC}"
+$NULLSCAN --version > /dev/null
+if [ $? -ne 0 ]; then
+    echo -e "${RED}NullScan verification failed!${NC}"
+    exit 1
+fi
 
-print_success() {
-    echo -e "${GREEN}✅ $1${NC}"
-}
+echo -e "\n${GREEN}Starting benchmark tests on $TARGET...${NC}"
+echo -e "${BLUE}Running $ITERATIONS iterations per test${NC}\n"
 
-print_error() {
+# Test 1: Top 100 ports
+echo -e "${CYAN}Test 1: Top 100 ports scan${NC}"
+TIMES1=()
+for i in $(seq 1 $ITERATIONS); do
+    echo -n "  Run $i/$ITERATIONS... "
+    START=$(date +%s.%N)
+    $NULLSCAN --target $TARGET --top100 --quiet > /dev/null 2>&1
+    END=$(date +%s.%N)
+    DURATION=$(echo "$END - $START" | bc -l)
+    TIMES1+=($DURATION)
+    printf "${GREEN}%.2fs${NC}\n" $DURATION
+done
+
+# Calculate average for test 1
+AVG1=0
+for time in "${TIMES1[@]}"; do
+    AVG1=$(echo "$AVG1 + $time" | bc -l)
+done
+AVG1=$(echo "scale=2; $AVG1 / $ITERATIONS" | bc -l)
+echo -e "  ${YELLOW}Average: ${AVG1}s${NC}"
+
+# Test 2: Common ports with banners
+echo -e "\n${CYAN}Test 2: Common ports with banners${NC}"
+TIMES2=()
+for i in $(seq 1 $ITERATIONS); do
+    echo -n "  Run $i/$ITERATIONS... "
+    START=$(date +%s.%N)
+    $NULLSCAN --target $TARGET --ports 22,80,443,3389 --banners --quiet > /dev/null 2>&1
+    END=$(date +%s.%N)
+    DURATION=$(echo "$END - $START" | bc -l)
+    TIMES2+=($DURATION)
+    printf "${GREEN}%.2fs${NC}\n" $DURATION
+done
+
+# Calculate average for test 2
+AVG2=0
+for time in "${TIMES2[@]}"; do
+    AVG2=$(echo "$AVG2 + $time" | bc -l)
+done
+AVG2=$(echo "scale=2; $AVG2 / $ITERATIONS" | bc -l)
+echo -e "  ${YELLOW}Average: ${AVG2}s${NC}"
+
+# Test 3: Fast mode
+echo -e "\n${CYAN}Test 3: Fast mode scan${NC}"
+TIMES3=()
+for i in $(seq 1 $ITERATIONS); do
+    echo -n "  Run $i/$ITERATIONS... "
+    START=$(date +%s.%N)
+    $NULLSCAN --target $TARGET --fast-mode --top100 --quiet > /dev/null 2>&1
+    END=$(date +%s.%N)
+    DURATION=$(echo "$END - $START" | bc -l)
+    TIMES3+=($DURATION)
+    printf "${GREEN}%.2fs${NC}\n" $DURATION
+done
+
+# Calculate average for test 3
+AVG3=0
+for time in "${TIMES3[@]}"; do
+    AVG3=$(echo "$AVG3 + $time" | bc -l)
+done
+AVG3=$(echo "scale=2; $AVG3 / $ITERATIONS" | bc -l)
+echo -e "  ${YELLOW}Average: ${AVG3}s${NC}"
+
+# Results summary
+echo -e "\n${CYAN}==================================================${NC}"
+echo -e "${GREEN}BENCHMARK RESULTS${NC}"
+echo -e "${CYAN}==================================================${NC}"
+echo -e "Target: $TARGET"
+echo -e "Iterations per test: $ITERATIONS"
+echo ""
+echo -e "Test 1 - Top 100 ports:       ${AVG1}s"
+echo -e "Test 2 - Common ports+banners: ${AVG2}s"
+echo -e "Test 3 - Fast mode:           ${AVG3}s"
+echo ""
+
+# Find fastest test
+FASTEST_TIME=$AVG1
+FASTEST_NAME="Top 100 ports"
+if (( $(echo "$AVG2 < $FASTEST_TIME" | bc -l) )); then
+    FASTEST_TIME=$AVG2
+    FASTEST_NAME="Common ports+banners"
+fi
+if (( $(echo "$AVG3 < $FASTEST_TIME" | bc -l) )); then
+    FASTEST_TIME=$AVG3
+    FASTEST_NAME="Fast mode"
+fi
+
+echo -e "${GREEN}Fastest test: $FASTEST_NAME (${FASTEST_TIME}s)${NC}"
+
+# Save results to CSV
+CSV_FILE="benchmark_results_$(date +%Y%m%d_%H%M%S).csv"
+echo "Test,AverageTime,AllTimes" > $CSV_FILE
+echo "Top100,$AVG1,\"$(IFS=';'; echo "${TIMES1[*]}")\"" >> $CSV_FILE
+echo "CommonPorts,$AVG2,\"$(IFS=';'; echo "${TIMES2[*]}")\"" >> $CSV_FILE
+echo "FastMode,$AVG3,\"$(IFS=';'; echo "${TIMES3[*]}")\"" >> $CSV_FILE
+
+echo -e "${BLUE}Results saved to: $CSV_FILE${NC}"
+echo -e "${GREEN}Benchmark complete!${NC}"
     echo -e "${RED}❌ $1${NC}"
 }
 
